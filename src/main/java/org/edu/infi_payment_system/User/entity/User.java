@@ -1,7 +1,10 @@
 package org.edu.infi_payment_system.User.entity;
 
+import org.edu.infi_payment_system.User.enums.AccountStatus;
 import jakarta.persistence.*;
 import lombok.*;
+
+
 import java.time.LocalDateTime;
 
 @Entity
@@ -19,16 +22,16 @@ public class User {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false)
+    @Column(nullable = false, length = 100)
     private String name;
 
-    @Column(unique = true , nullable = false)
+    @Column(unique = true , nullable = false, length = 100)
     private String email;
 
-    @Column(nullable = false)
+    @Column(nullable = false )
     private String password;
 
-    @Column(unique = true , nullable = false)
+    @Column(unique = true , nullable = false , length = 15)
     private String mobileNumber;
 
     @Column(nullable = false)
@@ -38,14 +41,16 @@ public class User {
     @Column(nullable = false)
     private AccountStatus accountStatus = AccountStatus.ACTIVE;
 
-    @Column(updatable = false)
+    @Column(nullable = false,updatable = false)
     private LocalDateTime createdAt;
 
+    @Column(nullable = false)
     private LocalDateTime updatedAt;
 
     @PrePersist
     public void prePersist(){
         this.createdAt = LocalDateTime.now();
+        this.updatedAt = LocalDateTime.now();
     }
 
     @PreUpdate
