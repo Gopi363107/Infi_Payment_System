@@ -5,6 +5,9 @@ import lombok.RequiredArgsConstructor;
 import org.edu.infi_payment_system.User.dto.request.LoginRequestDto;
 import org.edu.infi_payment_system.User.dto.request.RegisterRequestDto;
 import org.edu.infi_payment_system.User.dto.response.UserResponseDto;
+import org.edu.infi_payment_system.User.mapper.UserMapper;
+import org.edu.infi_payment_system.User.repository.UserRepository;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -15,6 +18,8 @@ import java.util.stream.Collectors;
 public class UserServiceImpl implements UserService{
 
     private final UserRepository userRepository;
+    private final UserMapper userMapper;
+    private final PasswordEncoder passwordEncoder;
 
     @Override
     public UserResponseDto registerUser(@Valid RegisterRequestDto requestDto){

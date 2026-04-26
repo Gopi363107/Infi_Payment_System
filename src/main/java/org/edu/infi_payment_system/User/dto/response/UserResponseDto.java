@@ -9,4 +9,7 @@ public class UserResponseDto {
     private String name;
     private String email;
     private String mobileNumber;
+
+    private String accountStatus;
+    private boolean isVerified;
 }
