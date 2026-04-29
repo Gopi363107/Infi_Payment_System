@@ -5,7 +5,7 @@ import lombok.RequiredArgsConstructor;
 import org.edu.infi_payment_system.User.dto.request.LoginRequestDto;
 import org.edu.infi_payment_system.User.dto.request.RegisterRequestDto;
 import org.edu.infi_payment_system.User.dto.response.UserResponseDto;
-import org.edu.infi_payment_system.User.entity.User;
+import org.edu.infi_payment_system.User.entity.AppUser;
 import org.edu.infi_payment_system.User.exception.InvalidCredentialsException;
 import org.edu.infi_payment_system.User.exception.UserAlreadyExistsException;
 import org.edu.infi_payment_system.User.mapper.UserMapper;
@@ -33,17 +33,17 @@ public class UserServiceImpl implements UserService{
             throw new UserAlreadyExistsException("User already exists with this email");
         }
 
-        User user = userMapper.toEntity(requestDto);
+        AppUser user = userMapper.toEntity(requestDto);
         user.setPassword(passwordEncoder.encode(requestDto.getPassword()));
 
-        User savedUser = userRepository.save(user);
+        AppUser savedUser = userRepository.save(user);
         return userMapper.toResponseDto(savedUser);
     }
 
     @Override
     public String loginUser(@Valid LoginRequestDto requestDto){
 
-        User user = userRepository.findByEmail(requestDto.getEmail())
+        AppUser user = userRepository.findByEmail(requestDto.getEmail())
                 .orElseThrow(() -> new UsernameNotFoundException("Invalid email"));
 
         if(!passwordEncoder.matches(requestDto.getPassword(), user.getPassword())){
@@ -55,7 +55,7 @@ public class UserServiceImpl implements UserService{
     @Override
     public UserResponseDto getUserById(Long id){
 
-        User user = userRepository.findById(id).orElseThrow( () -> new UsernameNotFoundException("user not found with id "+ id));
+        AppUser user = userRepository.findById(id).orElseThrow( () -> new UsernameNotFoundException("user not found with id "+ id));
 
         return userMapper.toResponseDto(user);
     }

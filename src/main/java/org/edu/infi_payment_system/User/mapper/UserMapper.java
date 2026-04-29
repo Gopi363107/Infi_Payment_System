@@ -3,18 +3,18 @@ package org.edu.infi_payment_system.User.mapper;
 import lombok.Getter;
 import org.edu.infi_payment_system.User.dto.request.RegisterRequestDto;
 import org.edu.infi_payment_system.User.dto.response.UserResponseDto;
-import org.edu.infi_payment_system.User.entity.User;
+import org.edu.infi_payment_system.User.entity.AppUser;
 import org.springframework.stereotype.Component;
 
 @Component
 @Getter
 public class UserMapper {
 
-    public User toEntity(RegisterRequestDto dto){
+    public AppUser toEntity(RegisterRequestDto dto){
 
         if(dto == null)return null;
 
-        User user = new User();
+        AppUser user = new AppUser();
         user.setName(dto.getName().trim());
         user.setEmail(dto.getEmail().trim().toLowerCase());
         user.setMobileNumber(dto.getMobileNumber().trim());
@@ -23,7 +23,7 @@ public class UserMapper {
         return user;
     }
 
-    public UserResponseDto toResponseDto(User user){
+    public UserResponseDto toResponseDto(AppUser user){
         if(user == null)return null;
 
         UserResponseDto dto = new UserResponseDto();

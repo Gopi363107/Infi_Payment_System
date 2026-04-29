@@ -27,7 +27,7 @@ public class Encryption {
             SecretKeySpec key = new SecretKeySpec(SECRET.getBytes() , "AES");
             Cipher cipher = Cipher.getInstance("AES");
             cipher.init(Cipher.DECRYPT_MODE , key);
-            return new String(cipher.doFinal(Base64.getDecoder().decode(encryptedData)));
+            return new String(cipher.doFinal(Base64.getDecoder().decode(encryptData)));
         }
         catch (Exception e){
             throw new RuntimeException("Error while decrypting");

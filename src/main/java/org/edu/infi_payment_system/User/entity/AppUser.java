@@ -16,7 +16,7 @@ import java.time.LocalDateTime;
         @Index(name = "idx_email", columnList = "email"),
         @Index(name = "idx_mobile", columnList = "mobileNumber")
 })
-public class User {
+public class AppUser {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
