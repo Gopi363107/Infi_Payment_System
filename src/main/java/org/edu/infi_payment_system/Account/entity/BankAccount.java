@@ -29,8 +29,6 @@ public class BankAccount {
     @Column(nullable = false)
     private String bankName;
 
-    /*@Column(nullable = false , unique = true)
-    private String accountNumber;*/
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
