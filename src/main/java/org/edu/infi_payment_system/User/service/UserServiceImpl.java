@@ -27,7 +27,7 @@ public class UserServiceImpl implements UserService{
 
 
     @Override
-    public UserResponseDto registerUser(@Valid RegisterRequestDto requestDto){
+    public UserResponseDto registerUser(RegisterRequestDto requestDto){
 
         if(userRepository.existsByEmail(requestDto.getEmail())){
             throw new UserAlreadyExistsException("User already exists with this email");
@@ -41,7 +41,7 @@ public class UserServiceImpl implements UserService{
     }
 
     @Override
-    public String loginUser(@Valid LoginRequestDto requestDto){
+    public String loginUser(LoginRequestDto requestDto){
 
         AppUser user = userRepository.findByEmail(requestDto.getEmail())
                 .orElseThrow(() -> new UsernameNotFoundException("Invalid email"));

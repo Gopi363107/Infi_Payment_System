@@ -9,5 +9,5 @@ public class InfiPaymentSystemApplication {
     public static void main(String[] args) {
         SpringApplication.run(InfiPaymentSystemApplication.class, args);
     }
-
+    // http://localhost:8080/swagger-ui.html
 }
