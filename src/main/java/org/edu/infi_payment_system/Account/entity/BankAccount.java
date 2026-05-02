@@ -47,7 +47,7 @@ public class BankAccount {
     private String accountHolderName;
 
     @Column(nullable = false)
-    private BigDecimal balance = BigDecimal.ZERO;
+    private Double balance = 0.0;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)

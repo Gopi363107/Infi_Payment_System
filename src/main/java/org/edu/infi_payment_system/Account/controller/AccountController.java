@@ -24,7 +24,7 @@ public class AccountController {
         return ResponseEntity.ok(responseDto);
     }
 
-    @PostMapping("/{id}")
+    @PatchMapping("/{id}")
     public ResponseEntity<AccountResponseDto> updateAccount(@PathVariable Long id ,@Valid @RequestBody AccountRequestDto dto){
         AccountResponseDto updatedAccount = accountService.updateAccount(id , dto);
         return ResponseEntity.ok(updatedAccount);
