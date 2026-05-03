@@ -7,7 +7,6 @@ import org.edu.infi_payment_system.Payment.dto.PaymentRequestDto;
 import org.edu.infi_payment_system.Payment.dto.PaymentResponseDto;
 import org.edu.infi_payment_system.Payment.entity.BankPayment;
 import org.edu.infi_payment_system.Payment.enums.PaymentStatus;
-import org.edu.infi_payment_system.Payment.exception.PaymentIdNotFoundException;
 import org.edu.infi_payment_system.Payment.mapper.PaymentMapper;
 import org.edu.infi_payment_system.Payment.repository.PaymentRepository;
 import org.springframework.stereotype.Service;
@@ -30,11 +29,11 @@ public class PaymentServiceImpl implements PaymentService{
 
         // 1.fetch sender account
         BankAccount sender  = accountRepository.findById(dto.getSenderAccountId())
-                .orElseThrow(()->new RuntimeException("sender account not found"));
+                .orElseThrow(()->new AccountNotFoundException("sender account not found"));
 
         // 2.fetch receiver account
         BankAccount receiver = accountRepository.findById(dto.getReceiverAccountId())
-                .orElseThrow(() -> new RuntimeException("receiver account not found"));
+                .orElseThrow(() -> new AccountNotFoundException("receiver account not found"));
 
         // 3. create  payment entity (pending)
         BankPayment payment = paymentMapper.toEntity(dto);
@@ -43,7 +42,7 @@ public class PaymentServiceImpl implements PaymentService{
 
             // 4. check balance
             if(sender.getBalance() < dto.getAmount()){
-                throw new RuntimeException("Insufficient Balance");
+                throw new InsufficientBalanceException("Insufficient Balance");
             }
 
             // 5. debit money

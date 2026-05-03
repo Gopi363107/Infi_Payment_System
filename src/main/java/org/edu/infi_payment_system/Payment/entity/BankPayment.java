@@ -6,6 +6,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.edu.infi_payment_system.Payment.enums.PaymentStatus;
+import org.springframework.stereotype.Indexed;
 
 import java.time.LocalDateTime;
 
@@ -19,9 +20,7 @@ public class BankPayment {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
-    @ManyToOne
-    @JoinColumn(name = "sender_account_id")
+    
     private Long senderAccountId;
 
     private Long receiverAccountId;

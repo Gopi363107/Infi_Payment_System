@@ -1,5 +1,7 @@
-package org.edu.infi_payment_system.User.exception;
+package org.edu.infi_payment_system.User.exception.handler;
 
+import org.edu.infi_payment_system.User.exception.custom.UserAlreadyExistsException;
+import org.edu.infi_payment_system.User.exception.payload.ErrorResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;

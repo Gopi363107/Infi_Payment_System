@@ -1,13 +1,10 @@
 package org.edu.infi_payment_system.User.service;
 
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.edu.infi_payment_system.User.dto.request.LoginRequestDto;
 import org.edu.infi_payment_system.User.dto.request.RegisterRequestDto;
 import org.edu.infi_payment_system.User.dto.response.UserResponseDto;
 import org.edu.infi_payment_system.User.entity.AppUser;
-import org.edu.infi_payment_system.User.exception.InvalidCredentialsException;
-import org.edu.infi_payment_system.User.exception.UserAlreadyExistsException;
 import org.edu.infi_payment_system.User.mapper.UserMapper;
 import org.edu.infi_payment_system.User.repository.UserRepository;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;

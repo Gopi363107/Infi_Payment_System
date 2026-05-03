@@ -5,7 +5,6 @@ import lombok.*;
 
 @Getter
 @Setter
-@RequiredArgsConstructor
 public class PaymentRequestDto {
 
     @NotNull(message = "sender id is required")

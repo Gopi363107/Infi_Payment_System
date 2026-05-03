@@ -17,7 +17,7 @@ public class AccountResponseDto {
     private String accountHolderName;
     private AccountType accountType;
     private String maskedAccountNumber;
-    private BigDecimal balance;
+    private Double balance;
     private AccountStatus status;
     private LocalDateTime createdAt;
 }
