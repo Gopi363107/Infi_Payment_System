@@ -2,6 +2,7 @@ package org.edu.infi_payment_system.Transaction.entity;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Positive;
+import lombok.Data;
 import org.edu.infi_payment_system.Transaction.enums.*;
 
 import java.time.LocalDateTime;
@@ -14,6 +15,7 @@ import java.time.LocalDateTime;
     @Index(name = "idx_idempotency_key" , columnList = "idempotencyKey"),
         @Index(name = "idx_pair_entry_id", columnList = "pairEntryId")
 })
+@Data
 public class TransactionLedger {
 
     // Identity & Traceability
