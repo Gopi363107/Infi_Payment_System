@@ -7,6 +7,5 @@ public interface TransactionLedgerService {
     TransactionResponseDto createDoubleEntryTransaction(Long transactionId,
                                                         Long senderId,
                                                         Long receiverId,
-                                                        Double amount
-    ) ;
+                                                        Double amount);
 }

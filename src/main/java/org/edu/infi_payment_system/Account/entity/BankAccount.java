@@ -14,15 +14,18 @@ import java.time.LocalDateTime;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-@Table(name = "bank_accounts",
-        indexes = @Index(name = "idx_last4", columnList = "last4Digits"))
+@Table(name = "bank_accounts", indexes = {
+        @Index(name = "idx_last4", columnList = "last4Digits"),
+        @Index(name = "idx_last4", columnList = "last4Digits"),
+        @Index(name = "idx_user_id", columnList = "user_id")
+})
 public class BankAccount {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id" , nullable = false)
     private AppUser user;
 
@@ -47,7 +50,7 @@ public class BankAccount {
     private String accountHolderName;
 
     @Column(nullable = false)
-    private Double balance = 0.0;
+    private BigDecimal  balance = BigDecimal.ZERO;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)

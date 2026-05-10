@@ -3,6 +3,7 @@ package org.edu.infi_payment_system.Payment.service;
 import lombok.RequiredArgsConstructor;
 import org.edu.infi_payment_system.Account.entity.BankAccount;
 import org.edu.infi_payment_system.Account.repository.AccountRepository;
+import org.edu.infi_payment_system.Notification.service.NotificationService;
 import org.edu.infi_payment_system.Payment.dto.PaymentRequestDto;
 import org.edu.infi_payment_system.Payment.dto.PaymentResponseDto;
 import org.edu.infi_payment_system.Payment.entity.BankPayment;
@@ -10,6 +11,7 @@ import org.edu.infi_payment_system.Payment.enums.PaymentStatus;
 import org.edu.infi_payment_system.Payment.exception.custom.*;
 import org.edu.infi_payment_system.Payment.mapper.PaymentMapper;
 import org.edu.infi_payment_system.Payment.repository.PaymentRepository;
+import org.edu.infi_payment_system.Transaction.service.TransactionLedgerService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -22,7 +24,9 @@ public class PaymentServiceImpl implements PaymentService{
 
     private final PaymentRepository paymentRepository;
     private final AccountRepository accountRepository;
+    private final TransactionLedgerService transactionService;
     private final PaymentMapper paymentMapper;
+    private final NotificationService notificationService;
 
     @Override
     @Transactional
@@ -59,6 +63,14 @@ public class PaymentServiceImpl implements PaymentService{
             // 8. Make payments status success
             payment.setStatus(PaymentStatus.SUCCESS);
             payment.setCompletedAt(LocalDateTime.now());
+
+            transactionService.createDoubleEntryTransaction(
+                    payment.getId(),                    // transactionId
+                    sender.getId(),                     // senderId
+                    receiver.getId(),                   // receiverId
+                    dto.getAmount()                    // amount
+            );
+
         }
         catch(Exception e){
 

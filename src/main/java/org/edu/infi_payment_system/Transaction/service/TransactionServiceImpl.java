@@ -2,7 +2,6 @@ package org.edu.infi_payment_system.Transaction.service;
 
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
-import org.edu.infi_payment_system.Transaction.dto.TransactionRequestDto;
 import org.edu.infi_payment_system.Transaction.dto.TransactionResponseDto;
 import org.edu.infi_payment_system.Transaction.entity.TransactionLedger;
 import org.edu.infi_payment_system.Transaction.enums.TransactionStatus;
@@ -29,9 +28,6 @@ public class TransactionServiceImpl implements TransactionLedgerService{
     ) {
 
         String pairEntryId = java.util.UUID.randomUUID().toString();
-
-        Double senderBalance = 20000.0;
-        Double receiverBalance = 40000.0;
 
         TransactionLedger debitEntry = CreateDebitEntry.createDebitEntry(
                 transactionId ,

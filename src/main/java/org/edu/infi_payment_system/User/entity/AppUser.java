@@ -1,11 +1,13 @@
 package org.edu.infi_payment_system.User.entity;
 
+import org.edu.infi_payment_system.Account.entity.BankAccount;
 import org.edu.infi_payment_system.User.enums.AccountStatus;
 import jakarta.persistence.*;
 import lombok.*;
 
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Entity
 @Getter
@@ -31,11 +33,14 @@ public class AppUser {
     @Column(nullable = false )
     private String password;
 
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    private List<BankAccount> accounts;
+
     @Column(unique = true , nullable = false , length = 15)
     private String mobileNumber;
 
     @Column(nullable = false)
-    private boolean isVerified = false;
+    private boolean verified = false;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
@@ -48,14 +53,13 @@ public class AppUser {
     private LocalDateTime updatedAt;
 
     @PrePersist
-    public void prePersist(){
+    public void prePersist() {
         this.createdAt = LocalDateTime.now();
         this.updatedAt = LocalDateTime.now();
     }
 
     @PreUpdate
-    public void preUpdate(){
+    public void preUpdate() {
         this.updatedAt = LocalDateTime.now();
     }
-
 }
