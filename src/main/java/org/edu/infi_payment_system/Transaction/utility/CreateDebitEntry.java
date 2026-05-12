@@ -1,9 +1,10 @@
 package org.edu.infi_payment_system.Transaction.utility;
 
-import org.edu.infi_payment_system.Transaction.dto.TransactionRequestDto;
 import org.edu.infi_payment_system.Transaction.entity.TransactionLedger;
 import org.edu.infi_payment_system.Transaction.enums.TransactionEntryType;
 import org.edu.infi_payment_system.Transaction.enums.TransactionStatus;
+
+import java.math.BigDecimal;
 
 public class CreateDebitEntry {
     public static TransactionLedger createDebitEntry(
@@ -11,7 +12,7 @@ public class CreateDebitEntry {
             String pairEntryId,
             Long senderId,
             Long receiverId,
-            Double amount
+            BigDecimal amount
     ) {
         TransactionLedger entry = new TransactionLedger();
 

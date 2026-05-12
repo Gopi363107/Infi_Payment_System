@@ -3,9 +3,8 @@ package org.edu.infi_payment_system.Notification.exception.handler;
 import org.edu.infi_payment_system.Notification.exception.custom.NotificationIdNotFoundException;
 import org.edu.infi_payment_system.Notification.exception.custom.NotificationStatusNotFoundException;
 import org.edu.infi_payment_system.Notification.exception.custom.NotificationTypeNotFoundException;
-import org.edu.infi_payment_system.Notification.exception.payload.ErrorResponse;
 import org.edu.infi_payment_system.Notification.exception.payload.ErrorCode;
-import org.edu.infi_payment_system.Payment.exception.payload.ErrorCodes;
+import org.edu.infi_payment_system.Notification.exception.payload.ErrorResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -14,7 +13,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import java.time.LocalDateTime;
 
 @RestControllerAdvice
-public class GlobalExceptionHandler {
+public class NotificationExceptionHandler {
 
     public ErrorResponse buildError(String errorCode , HttpStatus status , String message){
         return ErrorResponse.builder()
@@ -30,8 +29,8 @@ public class GlobalExceptionHandler {
             NotificationIdNotFoundException ex){
 
         return new ResponseEntity<>(
-                buildError(errorCode.NOTIFICATION_ID_NOT_FOUND,ex.getMessage() ,
-                        HttpStatus.NOT_FOUND)
+                buildError(ErrorCode.NOTIFICATION_ID_NOT_FOUND,
+                        HttpStatus.NOT_FOUND,ex.getMessage() )
                 ,HttpStatus.NOT_FOUND
         );
     }
@@ -41,8 +40,8 @@ public class GlobalExceptionHandler {
             NotificationIdNotFoundException ex){
 
         return new ResponseEntity<>(
-                buildError(errorCode.NOTIFICATION_TYPE_NOT_FOUND,ex.getMessage() ,
-                        HttpStatus.NOT_FOUND)
+                buildError(ErrorCode.NOTIFICATION_TYPE_NOT_FOUND,
+                        HttpStatus.NOT_FOUND,ex.getMessage() )
                 ,HttpStatus.NOT_FOUND
         );
     }
@@ -52,8 +51,8 @@ public class GlobalExceptionHandler {
             NotificationStatusNotFoundException ex){
 
         return new ResponseEntity<>(
-                buildError(errorCode.NOTIFICATION_STATUS_NOT_FOUND,ex.getMessage() ,
-                        HttpStatus.NOT_FOUND)
+                buildError(ErrorCode.NOTIFICATION_STATUS_NOT_FOUND,
+                        HttpStatus.NOT_FOUND,ex.getMessage() )
                 ,HttpStatus.NOT_FOUND
         );
     }
@@ -62,7 +61,7 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ErrorResponse> handleGeneralException(Exception ex){
 
         return new ResponseEntity<>(
-                buildError(ErrorCodes.INTERNAL_SERVER_ERROR
+                buildError(ErrorCode.INTERNAL_SERVER_ERROR
                         ,HttpStatus.INTERNAL_SERVER_ERROR,
                         "Something went wrong. Please try again later." )
                 ,HttpStatus.INTERNAL_SERVER_ERROR

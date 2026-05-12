@@ -26,7 +26,6 @@ public class PaymentServiceImpl implements PaymentService{
     private final AccountRepository accountRepository;
     private final TransactionLedgerService transactionService;
     private final PaymentMapper paymentMapper;
-    private final NotificationService notificationService;
 
     @Override
     @Transactional
@@ -46,15 +45,15 @@ public class PaymentServiceImpl implements PaymentService{
         try{
 
             // 4. check balance
-            if(sender.getBalance() < dto.getAmount()){
+            if(sender.getBalance().compareTo(dto.getAmount()) < 0){
                 throw new InsufficientBalanceException("Insufficient Balance");
             }
 
             // 5. debit money
-            sender.setBalance(sender.getBalance() - dto.getAmount());
+            sender.setBalance(sender.getBalance().subtract(dto.getAmount()) );
 
             // 6. credit money
-            receiver.setBalance(receiver.getBalance() + dto.getAmount());
+            receiver.setBalance(receiver.getBalance().add(dto.getAmount()));
 
             // 7. save updated accounts money
             accountRepository.save(sender);
@@ -117,7 +116,7 @@ public class PaymentServiceImpl implements PaymentService{
 
     @Override
     public List<PaymentResponseDto> getPaymentByStatus(PaymentStatus status){
-        return paymentRepository.findByPaymentStatus(status)
+        return paymentRepository.findByStatus(status)
                 .stream()
                 .map(paymentMapper :: toResponseDto)
                 .toList();

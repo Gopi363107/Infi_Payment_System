@@ -5,6 +5,7 @@ import jakarta.validation.constraints.Positive;
 import lombok.Data;
 import org.edu.infi_payment_system.Transaction.enums.*;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @Entity
@@ -53,14 +54,14 @@ public class TransactionLedger {
     //Money Details
     @Positive
     @Column(nullable = false)
-    private Double amount;
+    private BigDecimal amount;
 
     @Enumerated(EnumType.STRING)
     private TransactionCurrency transactionCurrency;
 
     // Balance Snapshot
-    private Double openingBalance;
-    private Double closingBalance;
+    private BigDecimal openingBalance;
+    private BigDecimal closingBalance;
 
     //Double Entry Linking
     private String pairEntryId;

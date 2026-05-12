@@ -9,5 +9,5 @@ import java.util.List;
 
 public interface PaymentRepository extends JpaRepository<BankPayment, Long> {
     List<BankPayment>  findBySenderAccountIdOrReceiverAccountId(Long senderId, Long receiverId);
-    List<BankPayment> findByPaymentStatus(PaymentStatus status);
+    List<BankPayment> findByStatus(PaymentStatus status);
 }

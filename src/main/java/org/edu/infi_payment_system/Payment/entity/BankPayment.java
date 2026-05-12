@@ -8,6 +8,7 @@ import lombok.Setter;
 import org.edu.infi_payment_system.Payment.enums.PaymentStatus;
 import org.springframework.stereotype.Indexed;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @Entity
@@ -25,7 +26,7 @@ public class BankPayment {
 
     private Long receiverAccountId;
 
-    private Double amount;
+    private BigDecimal amount;
 
     @Enumerated(EnumType.STRING)
     private PaymentStatus status;

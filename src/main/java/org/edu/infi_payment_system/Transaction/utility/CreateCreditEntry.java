@@ -5,6 +5,8 @@ import org.edu.infi_payment_system.Transaction.entity.TransactionLedger;
 import org.edu.infi_payment_system.Transaction.enums.TransactionEntryType;
 import org.edu.infi_payment_system.Transaction.enums.TransactionStatus;
 
+import java.math.BigDecimal;
+
 public class CreateCreditEntry {
 
     public static TransactionLedger createCreditEntry(
@@ -12,7 +14,7 @@ public class CreateCreditEntry {
             String pairEntryId,
             Long senderId,
             Long receiverId,
-            Double amount
+            BigDecimal amount
     ) {
         TransactionLedger entry = new TransactionLedger();
 

@@ -4,6 +4,7 @@ import org.edu.infi_payment_system.Account.entity.BankAccount;
 import org.edu.infi_payment_system.User.enums.AccountStatus;
 import jakarta.persistence.*;
 import lombok.*;
+import org.edu.infi_payment_system.User.enums.UserRole;
 
 
 import java.time.LocalDateTime;
@@ -45,6 +46,10 @@ public class AppUser {
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private AccountStatus accountStatus = AccountStatus.ACTIVE;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private UserRole role = UserRole.USER;
 
     @Column(nullable = false,updatable = false)
     private LocalDateTime createdAt;

@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import java.time.LocalDateTime;
 
 @RestControllerAdvice
-public class GlobalExceptionHandler{
+public class PaymentExceptionHandler {
 
     private ErrorResponse buildError(String errorCode ,String message, HttpStatus status) {
         return ErrorResponse.builder()

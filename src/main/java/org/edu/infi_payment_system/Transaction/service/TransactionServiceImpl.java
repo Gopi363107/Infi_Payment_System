@@ -10,6 +10,7 @@ import org.edu.infi_payment_system.Transaction.utility.CreateCreditEntry;
 import org.edu.infi_payment_system.Transaction.utility.CreateDebitEntry;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 @Service
@@ -24,7 +25,7 @@ public class TransactionServiceImpl implements TransactionLedgerService{
             Long transactionId,
             Long senderId,
             Long receiverId,
-            Double amount
+            BigDecimal amount
     ) {
 
         String pairEntryId = java.util.UUID.randomUUID().toString();
