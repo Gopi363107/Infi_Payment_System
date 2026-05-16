@@ -5,9 +5,13 @@ import org.edu.infi_payment_system.User.enums.AccountStatus;
 import jakarta.persistence.*;
 import lombok.*;
 import org.edu.infi_payment_system.User.enums.UserRole;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 
 
 import java.time.LocalDateTime;
+import java.util.Collection;
 import java.util.List;
 
 @Entity
@@ -19,7 +23,7 @@ import java.util.List;
         @Index(name = "idx_email", columnList = "email"),
         @Index(name = "idx_mobile", columnList = "mobileNumber")
 })
-public class AppUser {
+public class AppUser implements UserDetails {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -34,6 +38,10 @@ public class AppUser {
     @Column(nullable = false )
     private String password;
 
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private UserRole role = UserRole.USER;
+
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private List<BankAccount> accounts;
 
@@ -46,10 +54,6 @@ public class AppUser {
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private AccountStatus accountStatus = AccountStatus.ACTIVE;
-
-    @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
-    private UserRole role = UserRole.USER;
 
     @Column(nullable = false,updatable = false)
     private LocalDateTime createdAt;
@@ -66,5 +70,37 @@ public class AppUser {
     @PreUpdate
     public void preUpdate() {
         this.updatedAt = LocalDateTime.now();
+    }
+
+    @Override
+    public Collection<?extends GrantedAuthority> getAuthorities(){
+        return List.of(
+                new SimpleGrantedAuthority("ROLE_" + role.name())
+        );
+    }
+
+    @Override
+    public String getUsername(){
+        return this.email;
+    }
+
+    @Override
+    public boolean isAccountNonExpired(){
+        return true;
+    }
+
+    @Override
+    public boolean isAccountNonLocked(){
+        return this.accountStatus != AccountStatus.BLOCKED;
+    }
+
+    @Override
+    public boolean isCredentialsNonExpired(){
+        return true;
+    }
+
+    @Override
+    public boolean isEnabled(){
+        return this.verified;
     }
 }

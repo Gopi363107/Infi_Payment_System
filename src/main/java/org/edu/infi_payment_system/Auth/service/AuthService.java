@@ -9,4 +9,5 @@ public interface AuthService {
 
     AuthResponseDto login(LoginRequestDto requestDto);
     AuthResponseDto register(RegisterRequestDto request);
+
 }

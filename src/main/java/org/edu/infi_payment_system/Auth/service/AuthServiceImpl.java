@@ -2,7 +2,9 @@ package org.edu.infi_payment_system.Auth.service;
 
 import lombok.RequiredArgsConstructor;
 import org.edu.infi_payment_system.Auth.dto.AuthResponseDto;
-import org.edu.infi_payment_system.Auth.security.JwtService;
+import org.edu.infi_payment_system.Auth.exception.custom.EmailAlreadyExistsException;
+import org.edu.infi_payment_system.Auth.exception.custom.MobileNumberAlreadyExistsException;
+import org.edu.infi_payment_system.Auth.exception.custom.UserNotFoundException;
 import org.edu.infi_payment_system.User.dto.request.LoginRequestDto;
 import org.edu.infi_payment_system.User.dto.request.RegisterRequestDto;
 import org.edu.infi_payment_system.User.entity.AppUser;
@@ -26,11 +28,11 @@ public class AuthServiceImpl implements AuthService{
     public AuthResponseDto register(RegisterRequestDto request) {
 
         if(userRepository.existsByEmail(request.getEmail())){
-            throw new RuntimeException("Email already registered");
+            throw new EmailAlreadyExistsException("Email already registered");
         }
 
         if(userRepository.existsByMobileNumber(request.getMobileNumber())){
-            throw new RuntimeException("Mobile number already registered");
+            throw new MobileNumberAlreadyExistsException("Mobile number already registered");
         }
 
         AppUser user = new AppUser();
@@ -63,7 +65,7 @@ public class AuthServiceImpl implements AuthService{
         );
 
         AppUser user = userRepository.findByEmail(requestDto.getEmail())
-                .orElseThrow(() -> new RuntimeException("User not found"));
+                .orElseThrow(() -> new UserNotFoundException("User not found"));
 
         // Generate JWT token
         String token = jwtService.generateToken(user);

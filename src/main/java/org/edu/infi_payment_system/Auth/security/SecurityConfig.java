@@ -1,4 +1,4 @@
 package org.edu.infi_payment_system.Auth.security;
 
-public class CustomerDetailsService {
+public class SecurityConfig {
 }
