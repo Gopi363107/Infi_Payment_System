@@ -42,14 +42,14 @@ public class AppUser implements UserDetails {
     @Column(nullable = false)
     private UserRole role = UserRole.USER;
 
+    @Column(name = "is_verified", nullable = false)
+    private Boolean verified = false;
+
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private List<BankAccount> accounts;
 
-    @Column(unique = true , nullable = false , length = 15)
+    @Column(name = "mobile_number", unique = true, nullable = false, length = 15)
     private String mobileNumber;
-
-    @Column(nullable = false)
-    private boolean verified = false;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)

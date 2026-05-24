@@ -4,9 +4,10 @@ import org.edu.infi_payment_system.Payment.dto.PaymentRequestDto;
 import org.edu.infi_payment_system.Payment.dto.PaymentResponseDto;
 import org.edu.infi_payment_system.Payment.entity.BankPayment;
 import org.edu.infi_payment_system.Payment.enums.PaymentStatus;
+import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
-
+@Component
 public class PaymentMapper {
 
     public BankPayment toEntity(PaymentRequestDto dto){

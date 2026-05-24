@@ -1,4 +1,4 @@
-package org.edu.infi_payment_system.Account.exception;
+package org.edu.infi_payment_system.Account.exception.payload;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -9,6 +9,7 @@ import java.time.LocalDateTime;
 @Data
 @Builder
 @AllArgsConstructor
+
 public class ErrorResponse {
     private LocalDateTime timestamp;
     private int status;

@@ -17,7 +17,7 @@ public class UserMapper {
         AppUser user = new AppUser();
         user.setName(dto.getName().trim());
         user.setEmail(dto.getEmail().trim().toLowerCase());
-        user.setMobileNumber(dto.getMobileNumber().trim());
+        user.setMobileNumber(dto.getMobileNumber());
         user.setPassword(dto.getPassword());
 
         return user;
@@ -32,7 +32,7 @@ public class UserMapper {
         dto.setEmail(user.getEmail());
         dto.setMobileNumber(user.getMobileNumber());
         dto.setAccountStatus(user.getAccountStatus() != null ? user.getAccountStatus().name() : null);
-        dto.setVerified(user.isVerified());
+        dto.setVerified(user.getVerified());
 
         return dto;
 

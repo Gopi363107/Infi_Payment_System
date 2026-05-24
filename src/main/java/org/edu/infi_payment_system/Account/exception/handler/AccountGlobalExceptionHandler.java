@@ -1,4 +1,4 @@
-package org.edu.infi_payment_system.Account.exception;
+package org.edu.infi_payment_system.Account.exception.handler;
 
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.HttpStatus;

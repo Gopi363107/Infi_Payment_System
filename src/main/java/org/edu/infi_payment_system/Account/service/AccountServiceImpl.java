@@ -4,15 +4,12 @@ import lombok.RequiredArgsConstructor;
 import org.edu.infi_payment_system.Account.dto.AccountRequestDto;
 import org.edu.infi_payment_system.Account.dto.AccountResponseDto;
 import org.edu.infi_payment_system.Account.entity.BankAccount;
-import org.edu.infi_payment_system.Account.exception.AccountNotFoundException;
 import org.edu.infi_payment_system.Account.mapper.AccountMapper;
 import org.edu.infi_payment_system.Account.repository.AccountRepository;
-import org.edu.infi_payment_system.Account.exception.AccountAlreadyExistsException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 
 @Service

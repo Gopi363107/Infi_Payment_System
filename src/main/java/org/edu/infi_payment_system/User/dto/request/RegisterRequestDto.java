@@ -3,11 +3,13 @@ package org.edu.infi_payment_system.User.dto.request;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
+import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
 
 @Getter
 @Setter
+@Data
 public class RegisterRequestDto {
 
     @NotBlank(message = "Name is required")
