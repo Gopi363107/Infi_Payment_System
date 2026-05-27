@@ -13,10 +13,12 @@ import org.edu.infi_payment_system.Payment.mapper.PaymentMapper;
 import org.edu.infi_payment_system.Payment.repository.PaymentRepository;
 import org.edu.infi_payment_system.Transaction.service.TransactionLedgerService;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -64,7 +66,7 @@ public class PaymentServiceImpl implements PaymentService{
             payment.setCompletedAt(LocalDateTime.now());
 
             transactionService.createDoubleEntryTransaction(
-                    payment.getId(),                    // transactionId
+                    payment.getPaymentId(),                    // transactionId
                     sender.getId(),                     // senderId
                     receiver.getId(),                   // receiverId
                     dto.getAmount()                    // amount
@@ -90,9 +92,9 @@ public class PaymentServiceImpl implements PaymentService{
     }
 
     @Override
-    public PaymentResponseDto getPaymentById(Long id){
+    public PaymentResponseDto getPaymentById(UUID id){
 
-        BankPayment payment = paymentRepository.findById(id)
+        BankPayment payment = paymentRepository.findByPaymentId(id)
                 .orElseThrow(() -> new PaymentIdNotFoundException("Payment ID not found"));
 
         return paymentMapper.toResponseDto(payment);

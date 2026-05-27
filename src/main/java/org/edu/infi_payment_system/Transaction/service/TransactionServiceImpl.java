@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -22,7 +23,7 @@ public class TransactionServiceImpl implements TransactionLedgerService{
     @Override
     @Transactional
     public TransactionResponseDto createDoubleEntryTransaction(
-            Long transactionId,
+            UUID transactionId,
             Long senderId,
             Long receiverId,
             BigDecimal amount

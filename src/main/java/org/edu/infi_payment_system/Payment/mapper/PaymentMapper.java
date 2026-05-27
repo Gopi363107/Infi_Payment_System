@@ -32,7 +32,7 @@ public class PaymentMapper {
         }
 
         PaymentResponseDto dto = new PaymentResponseDto();
-        dto.setTransactionId(payment.getId());
+        dto.setTransactionId(payment.getPaymentId());
         dto.setSenderAccountId(payment.getSenderAccountId());
         dto.setReceiverAccountId(payment.getReceiverAccountId());
         dto.setAmount(payment.getAmount());

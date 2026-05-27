@@ -1,4 +1,146 @@
 package org.edu.infi_payment_system.Refund.service;
 
-public class RefundServiceImpl {
+import jakarta.transaction.Transactional;
+import lombok.RequiredArgsConstructor;
+import org.edu.infi_payment_system.Payment.entity.BankPayment;
+import org.edu.infi_payment_system.Payment.enums.PaymentStatus;
+import org.edu.infi_payment_system.Payment.repository.BankPaymentRepository;
+import org.edu.infi_payment_system.Refund.exception.custom.PaymentIdNotFoundException;
+import org.edu.infi_payment_system.Payment.repository.PaymentRepository;
+import org.edu.infi_payment_system.Refund.dto.RefundRequestDto;
+import org.edu.infi_payment_system.Refund.dto.RefundResponseDto;
+import org.edu.infi_payment_system.Refund.entity.Refund;
+import org.edu.infi_payment_system.Refund.enums.RefundStatus;
+import org.edu.infi_payment_system.Refund.enums.RefundType;
+import org.edu.infi_payment_system.Refund.exception.custom.PaymentNotSucceedException;
+import org.edu.infi_payment_system.Refund.exception.custom.RefundIdNotFoundException;
+import org.edu.infi_payment_system.Refund.exception.custom.RefundLimitExceededException;
+import org.edu.infi_payment_system.Refund.mapper.RefundMapper;
+import org.edu.infi_payment_system.Refund.repository.RefundRepository;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Isolation;
+
+import java.math.BigDecimal;
+import java.util.List;
+import java.util.UUID;
+
+
+@Service
+@RequiredArgsConstructor
+public class RefundServiceImpl implements RefundService{
+
+    private final RefundRepository refundRepository;
+    private final BankPaymentRepository bankPaymentRepository;
+    private final RefundMapper refundMapper;
+
+    @Override
+    @Transactional
+    public RefundResponseDto createRefund(RefundRequestDto dto){
+        Refund existingRefund = refundRepository
+                .findByIdempotencyKey(dto.getIdempotencyKey())
+                .orElse(null);
+
+        if(existingRefund != null){
+            return refundMapper.toResponseDto(existingRefund);
+        }
+
+        BankPayment payment = bankPaymentRepository
+                .findByPaymentIdForUpdate(dto.getPaymentId())
+                .orElseThrow(() ->
+                        new PaymentIdNotFoundException(
+                                "PaymentId not found"
+                        )
+                );
+
+        if(payment.getStatus() != PaymentStatus.SUCCESS){
+            throw new PaymentNotSucceedException(
+                    "Only successful payments can be refunded!"
+            );
+        }
+
+        BigDecimal totalRefundedAmount =
+                refundRepository.getTotalRefundedAmount(
+                        dto.getPaymentId()
+                );
+
+        if(totalRefundedAmount == null){
+            totalRefundedAmount = BigDecimal.ZERO;
+        }
+        BigDecimal totalAfterRefund =
+                totalRefundedAmount.add(
+                        dto.getRefundAmount()
+                );
+
+
+        if(totalAfterRefund.compareTo(payment.getAmount()) > 0){
+            throw new RefundLimitExceededException(
+                    "Refund amount exceeds payment amount"
+            );
+        }
+
+        RefundType refundType;
+
+        if(totalAfterRefund.compareTo(payment.getAmount()) == 0){
+            refundType = RefundType.FULL_REFUND;
+        }
+        else{
+            refundType = RefundType.PARTIAL_REFUND;
+        }
+
+        Refund refund = refundMapper.toEntity(
+                dto,
+                payment,
+                refundType
+        );
+
+        Refund saveRefund = refundRepository.save(refund);
+
+        return refundMapper.toResponseDto(
+                saveRefund
+        );
+    }
+
+    @Override
+    public RefundResponseDto getByRefundId(UUID refundId) {
+        Refund refund = refundRepository
+                .findById(refundId)
+                .orElseThrow(()-> new RefundIdNotFoundException(
+                        "Refund id is not found!")
+                );
+
+        return refundMapper.toResponseDto(refund);
+    }
+
+    @Override
+    public List<RefundResponseDto> getByPaymentId(UUID paymentId) {
+        return refundRepository
+                .findByPayment_Id(paymentId)
+                .stream()
+                .map(refundMapper :: toResponseDto)
+                .toList();
+    }
+
+    @Override
+    public List<RefundResponseDto> getByRefundStatus(RefundStatus status) {
+        return refundRepository.findByStatus(status)
+                .stream()
+                .map(refundMapper :: toResponseDto)
+                .toList();
+    }
+
+    @Override
+    public List<RefundResponseDto> getByRefundType(RefundType type) {
+        return refundRepository.findByType(type)
+                .stream()
+                .map(refundMapper :: toResponseDto)
+                .toList();
+    }
+
+    @Override
+    public List<RefundResponseDto> getAllRefunds() {
+        return refundRepository.findAll()
+                .stream()
+                .map(refundMapper :: toResponseDto)
+                .toList();
+    }
 }

@@ -5,11 +5,12 @@ import org.edu.infi_payment_system.Payment.enums.PaymentStatus;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 @Data
 public class PaymentResponseDto {
 
-    private Long transactionId;
+    private UUID transactionId;
     private Long senderAccountId;
     private Long receiverAccountId;
     private BigDecimal amount;

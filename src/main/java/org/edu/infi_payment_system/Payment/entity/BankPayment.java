@@ -6,10 +6,10 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.edu.infi_payment_system.Payment.enums.PaymentStatus;
-import org.springframework.stereotype.Indexed;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 @Entity
 @Getter
@@ -20,7 +20,7 @@ public class BankPayment {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private UUID paymentId;
     
     private Long senderAccountId;
 
