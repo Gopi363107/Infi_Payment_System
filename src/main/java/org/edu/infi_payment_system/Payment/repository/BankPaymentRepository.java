@@ -1,7 +1,7 @@
 package org.edu.infi_payment_system.Payment.repository;
 
 import jakarta.persistence.LockModeType;
-import org.edu.infi_payment_system.Payment.entity.BankPayment;
+import org.edu.infi_payment_system.Payment.entity.Payments;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Lock;
 import org.springframework.data.jpa.repository.Query;
@@ -10,7 +10,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 public interface BankPaymentRepository
-        extends JpaRepository<BankPayment, UUID> {
+        extends JpaRepository<Payments, UUID> {
 
     @Lock(LockModeType.PESSIMISTIC_WRITE)
     @Query("""
@@ -18,7 +18,7 @@ public interface BankPaymentRepository
        FROM BankPayment p
        WHERE p.paymentId = :paymentId
        """)
-    Optional<BankPayment> findByPaymentIdForUpdate(
+    Optional<Payments> findByPaymentIdForUpdate(
             UUID paymentId
     );
 

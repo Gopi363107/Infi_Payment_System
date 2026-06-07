@@ -7,8 +7,6 @@ import org.edu.infi_payment_system.Notification.dto.NotificationResponseDto;
 import org.edu.infi_payment_system.Notification.enums.NotificationStatus;
 import org.edu.infi_payment_system.Notification.enums.NotificationType;
 import org.edu.infi_payment_system.Notification.service.NotificationService;
-import org.edu.infi_payment_system.Payment.service.PaymentService;
-import org.edu.infi_payment_system.Transaction.service.TransactionLedgerService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 

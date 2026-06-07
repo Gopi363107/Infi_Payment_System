@@ -1,19 +1,23 @@
 package org.edu.infi_payment_system.Payment.service;
 
 import lombok.RequiredArgsConstructor;
-import org.edu.infi_payment_system.Account.entity.BankAccount;
+import org.edu.infi_payment_system.Account.entity.Accounts;
 import org.edu.infi_payment_system.Account.repository.AccountRepository;
-import org.edu.infi_payment_system.Notification.service.NotificationService;
+import org.edu.infi_payment_system.Audit.enums.AuditAction;
+import org.edu.infi_payment_system.Audit.service.AuditService;
+import org.edu.infi_payment_system.FraudCheck.dto.FraudCheckResult;
+import org.edu.infi_payment_system.FraudCheck.service.FraudService;
 import org.edu.infi_payment_system.Payment.dto.PaymentRequestDto;
 import org.edu.infi_payment_system.Payment.dto.PaymentResponseDto;
-import org.edu.infi_payment_system.Payment.entity.BankPayment;
+import org.edu.infi_payment_system.Payment.entity.Payments;
 import org.edu.infi_payment_system.Payment.enums.PaymentStatus;
 import org.edu.infi_payment_system.Payment.exception.custom.*;
 import org.edu.infi_payment_system.Payment.mapper.PaymentMapper;
+import org.edu.infi_payment_system.Payment.mapper.TransactionRequestMapper;
 import org.edu.infi_payment_system.Payment.repository.PaymentRepository;
-import org.edu.infi_payment_system.Transaction.service.TransactionLedgerService;
+import org.edu.infi_payment_system.Transaction.dto.TransactionRequestDto;
+import org.edu.infi_payment_system.Transaction.service.TransactionService;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
@@ -26,52 +30,92 @@ public class PaymentServiceImpl implements PaymentService{
 
     private final PaymentRepository paymentRepository;
     private final AccountRepository accountRepository;
-    private final TransactionLedgerService transactionService;
+    private final TransactionService transactionService;
     private final PaymentMapper paymentMapper;
+    private final TransactionRequestMapper transactionRequestMapper;
+    private final FraudService fraudService;
+    private final AuditService auditService;
 
     @Override
     @Transactional
-    public PaymentResponseDto processPayment(PaymentRequestDto dto){
+    public PaymentResponseDto createPayment(PaymentRequestDto paymentRequest){
 
         // 1.fetch sender account
-        BankAccount sender  = accountRepository.findById(dto.getSenderAccountId())
+        Accounts sender  = (Accounts) accountRepository
+                .findByAccountId(paymentRequest.getSenderAccountId())
                 .orElseThrow(()->new AccountNotFoundException("sender account not found"));
 
         // 2.fetch receiver account
-        BankAccount receiver = accountRepository.findById(dto.getReceiverAccountId())
+        Accounts receiver = (Accounts) accountRepository
+                .findByAccountId(paymentRequest.getReceiverAccountId())
                 .orElseThrow(() -> new AccountNotFoundException("receiver account not found"));
 
-        // 3. create  payment entity (pending)
-        BankPayment payment = paymentMapper.toEntity(dto);
+        if(sender.getAccountId().equals(receiver.getAccountId())){
+            throw new InvalidPaymentException("Sender and receiver cannot be same.");
+        }
+
+        // 3. idempotency key check
+        Payments existing = paymentRepository
+                .findByIdempotencyKey(paymentRequest.getIdempotencyKey());
+
+        if(existing != null){
+            return paymentMapper.toResponseDto(existing);
+        }
+
+        // 4. create  payment entity (pending)
+        Payments payment = paymentMapper.toEntity(paymentRequest);
+        payment.setStatus(PaymentStatus.PENDING);
+        paymentRepository.save(payment);
+
+        auditService.saveAudit(
+                payment.getPaymentId(),
+                AuditAction.PAYMENT_INITIATED,
+                paymentRequest.getSenderAccountId(),
+                paymentRequest.getReceiverAccountId()
+        );
+
+        // 5. Fraud detection check using Rules
+        FraudCheckResult fraudCheckResult = fraudService.checkResult(paymentRequest);
+
+        if(fraudCheckResult.isFraudulent()){
+            auditService.saveAudit(
+                    payment.getPaymentId(),
+                    AuditAction.FRAUD_DETECTED,
+                    paymentRequest.getSenderAccountId(),
+                    paymentRequest.getReceiverAccountId()
+            );
+            throw new RuntimeException(
+                    fraudCheckResult.getReason()
+            );
+        }
+
+        // 6.create a transaction request to process payment
+        TransactionRequestDto transactionRequest = transactionRequestMapper.toRequest(
+                payment,
+                paymentRequest);
+
 
         try{
+            auditService.saveAudit(
+                    payment.getPaymentId(),
+                    AuditAction.PAYMENT_PENDING,
+                    paymentRequest.getSenderAccountId(),
+                    paymentRequest.getReceiverAccountId()
+            );
 
-            // 4. check balance
-            if(sender.getBalance().compareTo(dto.getAmount()) < 0){
-                throw new InsufficientBalanceException("Insufficient Balance");
-            }
+            transactionService.processTransaction(transactionRequest);
 
-            // 5. debit money
-            sender.setBalance(sender.getBalance().subtract(dto.getAmount()) );
-
-            // 6. credit money
-            receiver.setBalance(receiver.getBalance().add(dto.getAmount()));
-
-            // 7. save updated accounts money
-            accountRepository.save(sender);
-            accountRepository.save(receiver);
-
-            // 8. Make payments status success
             payment.setStatus(PaymentStatus.SUCCESS);
             payment.setCompletedAt(LocalDateTime.now());
 
-            transactionService.createDoubleEntryTransaction(
-                    payment.getPaymentId(),                    // transactionId
-                    sender.getId(),                     // senderId
-                    receiver.getId(),                   // receiverId
-                    dto.getAmount()                    // amount
+            auditService.saveAudit(
+                    payment.getPaymentId(),
+                    AuditAction.PAYMENT_SUCCESS,
+                    paymentRequest.getSenderAccountId(),
+                    paymentRequest.getReceiverAccountId()
             );
 
+            paymentRepository.save(payment);
         }
         catch(Exception e){
 
@@ -79,30 +123,38 @@ public class PaymentServiceImpl implements PaymentService{
             payment.setStatus(PaymentStatus.FAILED);
             payment.setCompletedAt(LocalDateTime.now());
 
+            auditService.saveAudit(
+                    payment.getPaymentId(),
+                    AuditAction.PAYMENT_FAILED,
+                    paymentRequest.getSenderAccountId(),
+                    paymentRequest.getReceiverAccountId()
+            );
             // 10. save failed transaction
             paymentRepository.save(payment);
 
             throw e;
         }
-
-        // 11.save successful payment
-        paymentRepository.save(payment);
-
+        auditService.saveAudit(
+                paymentRepository.getPaymentId(),
+                AuditAction.PAYMENT_COMPLETED,
+                paymentRequest.getSenderAccountId(),
+                paymentRequest.getReceiverAccountId()
+        );
         return paymentMapper.toResponseDto(payment);
     }
 
     @Override
     public PaymentResponseDto getPaymentById(UUID id){
 
-        BankPayment payment = paymentRepository.findByPaymentId(id)
+        Payments payment = paymentRepository.findByPaymentId(id)
                 .orElseThrow(() -> new PaymentIdNotFoundException("Payment ID not found"));
 
         return paymentMapper.toResponseDto(payment);
     }
 
-    @Override
-    public List<PaymentResponseDto> getPaymentByAccount(Long accountId){
-        return paymentRepository.findBySenderAccountIdOrReceiverAccountId(accountId, accountId)
+    public List<PaymentResponseDto> getPaymentByAccount(UUID accountId){
+        return paymentRepository.findBySenderAccountIdOrReceiverAccountId
+                        (accountId, accountId)
                 .stream()
                 .map(paymentMapper :: toResponseDto)
                 .toList();

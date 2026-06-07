@@ -2,7 +2,7 @@ package org.edu.infi_payment_system.Payment.mapper;
 
 import org.edu.infi_payment_system.Payment.dto.PaymentRequestDto;
 import org.edu.infi_payment_system.Payment.dto.PaymentResponseDto;
-import org.edu.infi_payment_system.Payment.entity.BankPayment;
+import org.edu.infi_payment_system.Payment.entity.Payments;
 import org.edu.infi_payment_system.Payment.enums.PaymentStatus;
 import org.springframework.stereotype.Component;
 
@@ -10,10 +10,10 @@ import java.time.LocalDateTime;
 @Component
 public class PaymentMapper {
 
-    public BankPayment toEntity(PaymentRequestDto dto){
+    public Payments toEntity(PaymentRequestDto dto){
         if(dto == null)return null;
 
-        BankPayment payment = new BankPayment();
+        Payments payment = new Payments();
         payment.setSenderAccountId(dto.getSenderAccountId());
         payment.setReceiverAccountId(dto.getReceiverAccountId());
         payment.setAmount(dto.getAmount());
@@ -25,7 +25,7 @@ public class PaymentMapper {
         return payment;
     }
 
-    public PaymentResponseDto toResponseDto(BankPayment payment) {
+    public PaymentResponseDto toResponseDto(Payments payment) {
 
         if (payment == null) {
             return null;

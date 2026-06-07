@@ -2,14 +2,13 @@ package org.edu.infi_payment_system.Refund.service;
 
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
-import org.edu.infi_payment_system.Payment.entity.BankPayment;
+import org.edu.infi_payment_system.Payment.entity.Payments;
 import org.edu.infi_payment_system.Payment.enums.PaymentStatus;
 import org.edu.infi_payment_system.Payment.repository.BankPaymentRepository;
+import org.edu.infi_payment_system.Refund.entity.Refunds;
 import org.edu.infi_payment_system.Refund.exception.custom.PaymentIdNotFoundException;
-import org.edu.infi_payment_system.Payment.repository.PaymentRepository;
 import org.edu.infi_payment_system.Refund.dto.RefundRequestDto;
 import org.edu.infi_payment_system.Refund.dto.RefundResponseDto;
-import org.edu.infi_payment_system.Refund.entity.Refund;
 import org.edu.infi_payment_system.Refund.enums.RefundStatus;
 import org.edu.infi_payment_system.Refund.enums.RefundType;
 import org.edu.infi_payment_system.Refund.exception.custom.PaymentNotSucceedException;
@@ -18,7 +17,6 @@ import org.edu.infi_payment_system.Refund.exception.custom.RefundLimitExceededEx
 import org.edu.infi_payment_system.Refund.mapper.RefundMapper;
 import org.edu.infi_payment_system.Refund.repository.RefundRepository;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Isolation;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -36,7 +34,7 @@ public class RefundServiceImpl implements RefundService{
     @Override
     @Transactional
     public RefundResponseDto createRefund(RefundRequestDto dto){
-        Refund existingRefund = refundRepository
+        Refunds existingRefund = refundRepository
                 .findByIdempotencyKey(dto.getIdempotencyKey())
                 .orElse(null);
 
@@ -44,7 +42,7 @@ public class RefundServiceImpl implements RefundService{
             return refundMapper.toResponseDto(existingRefund);
         }
 
-        BankPayment payment = bankPaymentRepository
+        Payments payment = bankPaymentRepository
                 .findByPaymentIdForUpdate(dto.getPaymentId())
                 .orElseThrow(() ->
                         new PaymentIdNotFoundException(
@@ -74,7 +72,7 @@ public class RefundServiceImpl implements RefundService{
 
         if(totalAfterRefund.compareTo(payment.getAmount()) > 0){
             throw new RefundLimitExceededException(
-                    "Refund amount exceeds payment amount"
+                    "Refunds amount exceeds payment amount"
             );
         }
 
@@ -87,13 +85,13 @@ public class RefundServiceImpl implements RefundService{
             refundType = RefundType.PARTIAL_REFUND;
         }
 
-        Refund refund = refundMapper.toEntity(
+        Refunds refund = refundMapper.toEntity(
                 dto,
                 payment,
                 refundType
         );
 
-        Refund saveRefund = refundRepository.save(refund);
+        Refunds saveRefund = refundRepository.save(refund);
 
         return refundMapper.toResponseDto(
                 saveRefund
@@ -102,10 +100,10 @@ public class RefundServiceImpl implements RefundService{
 
     @Override
     public RefundResponseDto getByRefundId(UUID refundId) {
-        Refund refund = refundRepository
+        Refunds refund = refundRepository
                 .findById(refundId)
                 .orElseThrow(()-> new RefundIdNotFoundException(
-                        "Refund id is not found!")
+                        "Refunds id is not found!")
                 );
 
         return refundMapper.toResponseDto(refund);
@@ -114,7 +112,7 @@ public class RefundServiceImpl implements RefundService{
     @Override
     public List<RefundResponseDto> getByPaymentId(UUID paymentId) {
         return refundRepository
-                .findByPayment_Id(paymentId)
+                .findByPayment_PaymentId(paymentId)
                 .stream()
                 .map(refundMapper :: toResponseDto)
                 .toList();

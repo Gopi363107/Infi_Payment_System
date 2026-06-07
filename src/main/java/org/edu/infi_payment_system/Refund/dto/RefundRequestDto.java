@@ -17,8 +17,8 @@ public class RefundRequestDto {
     @NotNull(message = "Payment id is required")
     private UUID paymentId;
 
-    @NotNull(message = "Refund Amount is required")
-    @Positive(message = "Refund amount must be positive")
+    @NotNull(message = "Refunds Amount is required")
+    @Positive(message = "Refunds amount must be positive")
     private BigDecimal refundAmount;
 
     @NotBlank(message = "Reason is required")

@@ -1,6 +1,6 @@
 package org.edu.infi_payment_system.Auth.service;
 
-import lombok.NonNull;
+import jakarta.validation.constraints.NotBlank;
 import lombok.RequiredArgsConstructor;
 import org.edu.infi_payment_system.User.repository.UserRepository;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -14,8 +14,7 @@ public class CustomUserDetailService implements UserDetailsService{
 
     private final UserRepository userRepository;
 
-    @Override
-    public UserDetails loadUserByUsername(@NonNull String email)
+    public UserDetails loadUserByUsername(@NotBlank String email)
         throws UsernameNotFoundException {
 
             return userRepository.findByEmail(email)

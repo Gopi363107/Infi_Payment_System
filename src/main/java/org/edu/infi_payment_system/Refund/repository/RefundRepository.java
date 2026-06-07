@@ -1,12 +1,9 @@
 package org.edu.infi_payment_system.Refund.repository;
 
-import jakarta.persistence.LockModeType;
-import org.edu.infi_payment_system.Payment.entity.BankPayment;
-import org.edu.infi_payment_system.Refund.entity.Refund;
+import org.edu.infi_payment_system.Refund.entity.Refunds;
 import org.edu.infi_payment_system.Refund.enums.RefundStatus;
 import org.edu.infi_payment_system.Refund.enums.RefundType;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Lock;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
@@ -15,20 +12,20 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
-public interface RefundRepository extends JpaRepository<Refund, UUID> {
-    Optional<Refund> findByIdempotencyKey(
+public interface RefundRepository extends JpaRepository<Refunds, UUID> {
+    Optional<Refunds> findByIdempotencyKey(
             String key
     );
 
-    List<Refund> findByStatus(
+    List<Refunds> findByStatus(
             RefundStatus status
     );
 
-    List<Refund> findByType(
+    List<Refunds> findByType(
             RefundType type
     );
 
-    List<Refund> findByPayment_Id(
+    List<Refunds> findByPayment_PaymentId(
             UUID paymentId
     );
 

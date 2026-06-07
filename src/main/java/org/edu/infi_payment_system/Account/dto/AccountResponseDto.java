@@ -7,12 +7,13 @@ import org.edu.infi_payment_system.Account.enums.AccountType;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 @Getter
 @Setter
 public class AccountResponseDto {
 
-    private Long accountId;
+    private UUID accountId;
     private String bankName;
     private String accountHolderName;
     private AccountType accountType;

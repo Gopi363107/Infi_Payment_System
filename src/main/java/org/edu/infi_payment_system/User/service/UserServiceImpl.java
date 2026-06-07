@@ -4,7 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.edu.infi_payment_system.User.dto.request.LoginRequestDto;
 import org.edu.infi_payment_system.User.dto.request.RegisterRequestDto;
 import org.edu.infi_payment_system.User.dto.response.UserResponseDto;
-import org.edu.infi_payment_system.User.entity.AppUser;
+import org.edu.infi_payment_system.User.entity.Users;
 import org.edu.infi_payment_system.User.exception.custom.InvalidCredentialsException;
 import org.edu.infi_payment_system.User.exception.custom.UserAlreadyExistsException;
 import org.edu.infi_payment_system.User.mapper.UserMapper;
@@ -32,17 +32,17 @@ public class UserServiceImpl implements UserService{
             throw new UserAlreadyExistsException("User already exists with this email");
         }
 
-        AppUser user = userMapper.toEntity(requestDto);
+        Users user = userMapper.toEntity(requestDto);
         user.setPassword(passwordEncoder.encode(requestDto.getPassword()));
 
-        AppUser savedUser = userRepository.save(user);
+        Users savedUser = userRepository.save(user);
         return userMapper.toResponseDto(savedUser);
     }
 
     @Override
     public String loginUser(LoginRequestDto requestDto){
 
-        AppUser user = userRepository.findByEmail(requestDto.getEmail())
+        Users user = userRepository.findByEmail(requestDto.getEmail())
                 .orElseThrow(() -> new UsernameNotFoundException("Invalid email"));
 
         if(!passwordEncoder.matches(requestDto.getPassword(), user.getPassword())){
@@ -54,14 +54,15 @@ public class UserServiceImpl implements UserService{
     @Override
     public UserResponseDto getUserById(Long id){
 
-        AppUser user = userRepository.findById(id).orElseThrow( () -> new UsernameNotFoundException("user not found with id "+ id));
+        Users user = userRepository.findById(id).orElseThrow( () -> new UsernameNotFoundException("user not found with id "+ id));
 
         return userMapper.toResponseDto(user);
     }
 
     @Override
     public List<UserResponseDto> getAllUsers(){
-        return userRepository.findAll().stream()
+        return userRepository.findAll()
+                .stream()
                 .map(userMapper::toResponseDto)
                 .collect(Collectors.toList());
     }

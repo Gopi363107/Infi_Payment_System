@@ -10,9 +10,18 @@ import java.util.UUID;
 
 public interface PaymentService {
 
-    PaymentResponseDto processPayment(PaymentRequestDto dto);
+    PaymentResponseDto createPayment(PaymentRequestDto dto);
     PaymentResponseDto getPaymentById(UUID id);
-    List<PaymentResponseDto> getPaymentByAccount(Long accountId);
+    List<PaymentResponseDto> getPaymentByAccount(UUID accountId);
     List<PaymentResponseDto> getAllPayments();
     List<PaymentResponseDto> getPaymentByStatus(PaymentStatus status);
 }
+
+/*
+1. Validate request
+2. Fetch sender & receiver
+3. Create payment record (PENDING)
+4. Call transactionService.processTransaction(...)
+5. Mark payment SUCCESS or FAILED
+6. Return response
+ */

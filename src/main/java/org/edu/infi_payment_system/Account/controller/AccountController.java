@@ -10,6 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/account")
@@ -24,15 +25,15 @@ public class AccountController {
         return ResponseEntity.ok(responseDto);
     }
 
-    @PatchMapping("/{id}")
-    public ResponseEntity<AccountResponseDto> updateAccount(@PathVariable Long id ,@Valid @RequestBody AccountRequestDto dto){
-        AccountResponseDto updatedAccount = accountService.updateAccount(id , dto);
+    @PatchMapping("/{accountId}")
+    public ResponseEntity<AccountResponseDto> updateAccount(@PathVariable UUID accountId , @Valid @RequestBody AccountRequestDto dto){
+        AccountResponseDto updatedAccount = accountService.updateAccount(accountId , dto);
         return ResponseEntity.ok(updatedAccount);
     }
 
-    @GetMapping("/{id}")
-    public ResponseEntity<AccountResponseDto> getAccountById(@PathVariable Long id){
-        AccountResponseDto responseId = accountService.getAccountById(id);
+    @GetMapping("/{accountId}")
+    public ResponseEntity<AccountResponseDto> getAccountById(@PathVariable UUID accountId){
+        AccountResponseDto responseId = accountService.getAccountById(accountId);
         return ResponseEntity.ok(responseId);
     }
 
@@ -42,9 +43,9 @@ public class AccountController {
         return ResponseEntity.ok(accounts);
     }
 
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteAccount(@PathVariable Long id){
-        accountService.deleteAccount(id);
+    @DeleteMapping("/{accountId}")
+    public ResponseEntity<Void> deleteAccount(@PathVariable UUID accountId){
+        accountService.deleteAccount(accountId);
         return ResponseEntity.noContent().build();
     }
 }

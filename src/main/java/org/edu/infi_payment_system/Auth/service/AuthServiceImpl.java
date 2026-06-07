@@ -7,7 +7,7 @@ import org.edu.infi_payment_system.Auth.exception.custom.MobileNumberAlreadyExis
 import org.edu.infi_payment_system.Auth.exception.custom.UserNotFoundException;
 import org.edu.infi_payment_system.User.dto.request.LoginRequestDto;
 import org.edu.infi_payment_system.User.dto.request.RegisterRequestDto;
-import org.edu.infi_payment_system.User.entity.AppUser;
+import org.edu.infi_payment_system.User.entity.Users;
 import org.edu.infi_payment_system.User.repository.UserRepository;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -35,13 +35,13 @@ public class AuthServiceImpl implements AuthService{
             throw new MobileNumberAlreadyExistsException("Mobile number already registered");
         }
 
-        AppUser user = new AppUser();
+        Users user = new Users();
         user.setName(request.getName());
         user.setEmail(request.getEmail());
         user.setMobileNumber(request.getMobileNumber());
         user.setPassword(passwordEncoder.encode(request.getPassword()));
 
-        AppUser savedUser = userRepository.save(user);
+        Users savedUser = userRepository.save(user);
         String token = jwtService.generateToken(savedUser);
 
         AuthResponseDto response = new AuthResponseDto();
@@ -64,7 +64,7 @@ public class AuthServiceImpl implements AuthService{
                 )
         );
 
-        AppUser user = userRepository.findByEmail(requestDto.getEmail())
+        Users user = userRepository.findByEmail(requestDto.getEmail())
                 .orElseThrow(() -> new UserNotFoundException("User not found"));
 
         // Generate JWT token

@@ -11,8 +11,8 @@ import java.util.UUID;
 public class PaymentResponseDto {
 
     private UUID transactionId;
-    private Long senderAccountId;
-    private Long receiverAccountId;
+    private UUID senderAccountId;
+    private UUID receiverAccountId;
     private BigDecimal amount;
     private PaymentStatus status;
     private LocalDateTime createdAt;

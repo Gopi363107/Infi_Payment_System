@@ -1,6 +1,9 @@
 package org.edu.infi_payment_system.Account.exception.handler;
 
 import jakarta.servlet.http.HttpServletRequest;
+import org.edu.infi_payment_system.Account.exception.custom.AccountAlreadyExistsException;
+import org.edu.infi_payment_system.Account.exception.custom.AccountNotFoundException;
+import org.edu.infi_payment_system.Account.exception.payload.ErrorResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;

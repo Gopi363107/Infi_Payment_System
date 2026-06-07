@@ -1,10 +1,10 @@
 package org.edu.infi_payment_system.Refund.mapper;
 
 
-import org.edu.infi_payment_system.Payment.entity.BankPayment;
+import org.edu.infi_payment_system.Payment.entity.Payments;
 import org.edu.infi_payment_system.Refund.dto.RefundRequestDto;
 import org.edu.infi_payment_system.Refund.dto.RefundResponseDto;
-import org.edu.infi_payment_system.Refund.entity.Refund;
+import org.edu.infi_payment_system.Refund.entity.Refunds;
 import org.edu.infi_payment_system.Refund.enums.RefundStatus;
 import org.edu.infi_payment_system.Refund.enums.RefundType;
 import org.springframework.stereotype.Component;
@@ -12,16 +12,16 @@ import org.springframework.stereotype.Component;
 @Component
 public class RefundMapper {
 
-    public Refund toEntity(RefundRequestDto dto,
-                           BankPayment payment,
-                           RefundType refundType
+    public Refunds toEntity(RefundRequestDto dto,
+                            Payments payment,
+                            RefundType refundType
 
     ){
         if(dto == null){
             return null;
         }
 
-        Refund refund = new Refund();
+        Refunds refund = new Refunds();
         refund.setPayment(payment);
         refund.setRefundAmount(dto.getRefundAmount());
         refund.setReason(dto.getReason());
@@ -31,7 +31,7 @@ public class RefundMapper {
 
         return refund;
     }
-    public RefundResponseDto toResponseDto(Refund refund){
+    public RefundResponseDto toResponseDto(Refunds refund){
         if(refund == null){
             return null;
         }

@@ -2,16 +2,16 @@ package org.edu.infi_payment_system.Account.mapper;
 
 import org.edu.infi_payment_system.Account.dto.AccountRequestDto;
 import org.edu.infi_payment_system.Account.dto.AccountResponseDto;
-import org.edu.infi_payment_system.Account.entity.BankAccount;
+import org.edu.infi_payment_system.Account.entity.Accounts;
 import org.springframework.stereotype.Component;
 
 @Component
 public class AccountMapper {
 
-    public BankAccount toEntity(AccountRequestDto dto){
+    public Accounts toEntity(AccountRequestDto dto){
         if(dto == null)return null;
 
-        BankAccount bankAccount = new BankAccount();
+        Accounts bankAccount = new Accounts();
         bankAccount.setBankName(dto.getBankName());
         bankAccount.setAccountHolderName((dto.getAccountHolderName()));
         bankAccount.setIfscCode(dto.getIfscCode());
@@ -20,11 +20,11 @@ public class AccountMapper {
         return bankAccount;
     }
 
-    public AccountResponseDto toResponseDto(BankAccount account){
+    public AccountResponseDto toResponseDto(Accounts account){
         if(account == null)return null;
 
         AccountResponseDto dto = new AccountResponseDto();
-        dto.setAccountId(account.getId());
+        dto.setAccountId(account.getAccountId());
         dto.setAccountType(account.getAccountType());
         dto.setBankName(account.getBankName());
         dto.setMaskedAccountNumber("XXXX XXXX " + account.getLast4Digits());

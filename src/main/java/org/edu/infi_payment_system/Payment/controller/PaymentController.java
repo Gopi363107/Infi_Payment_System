@@ -10,6 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/payment")
@@ -19,22 +20,22 @@ public class PaymentController {
     private final PaymentService paymentService;
 
     @PostMapping("/transfer")
-    public ResponseEntity<PaymentResponseDto> processPayment(
+    public ResponseEntity<PaymentResponseDto> createPayment(
             @Valid @RequestBody PaymentRequestDto dto){
-        PaymentResponseDto response = paymentService.processPayment(dto);
+        PaymentResponseDto response = paymentService.createPayment(dto);
         return ResponseEntity.ok(response);
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<PaymentResponseDto> getPaymentById(
-             @PathVariable Long id){
+             @PathVariable UUID id){
         PaymentResponseDto response = paymentService.getPaymentById(id);
         return ResponseEntity.ok(response);
     }
 
     @GetMapping("/account/{accountId}")
     public ResponseEntity<List<PaymentResponseDto>> getPaymentByAccount(
-             @PathVariable Long accountId){
+             @PathVariable UUID accountId){
         return ResponseEntity.ok(paymentService.getPaymentByAccount(accountId));
     }
 

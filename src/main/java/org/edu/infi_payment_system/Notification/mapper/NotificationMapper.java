@@ -2,17 +2,17 @@ package org.edu.infi_payment_system.Notification.mapper;
 
 import org.edu.infi_payment_system.Notification.dto.NotificationRequestDto;
 import org.edu.infi_payment_system.Notification.dto.NotificationResponseDto;
-import org.edu.infi_payment_system.Notification.entity.Notification;
+import org.edu.infi_payment_system.Notification.entity.Notifications;
 import org.edu.infi_payment_system.Notification.enums.NotificationStatus;
 
 import java.time.LocalDateTime;
 
 public class NotificationMapper {
 
-    public static Notification toEntity(NotificationRequestDto dto){
+    public static Notifications toEntity(NotificationRequestDto dto){
         if(dto == null)return  null;
 
-        Notification notification = new Notification();
+        Notifications notification = new Notifications();
         notification.setUserId(dto.getUserId());
         notification.setReferenceId(dto.getReferenceId());
         notification.setReferenceType(dto.getNotificationReferenceType());
@@ -25,7 +25,7 @@ public class NotificationMapper {
         return notification;
     }
 
-    public static NotificationResponseDto toResponseDto(Notification notification){
+    public static NotificationResponseDto toResponseDto(Notifications notification){
         if(notification == null)return null;
 
         NotificationResponseDto response = new NotificationResponseDto();

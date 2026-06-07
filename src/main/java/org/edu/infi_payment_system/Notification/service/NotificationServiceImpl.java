@@ -3,7 +3,7 @@ package org.edu.infi_payment_system.Notification.service;
 import lombok.RequiredArgsConstructor;
 import org.edu.infi_payment_system.Notification.dto.NotificationRequestDto;
 import org.edu.infi_payment_system.Notification.dto.NotificationResponseDto;
-import org.edu.infi_payment_system.Notification.entity.Notification;
+import org.edu.infi_payment_system.Notification.entity.Notifications;
 import org.edu.infi_payment_system.Notification.enums.NotificationStatus;
 import org.edu.infi_payment_system.Notification.enums.NotificationType;
 import org.edu.infi_payment_system.Notification.exception.custom.NotificationIdNotFoundException;
@@ -25,9 +25,9 @@ public class NotificationServiceImpl implements NotificationService {
     @Override
     public NotificationResponseDto createNotification(NotificationRequestDto dto) {
 
-        Notification entity = NotificationMapper.toEntity(dto);
+        Notifications entity = NotificationMapper.toEntity(dto);
 
-        Notification saved =  notificationRepository.save(entity);
+        Notifications saved =  notificationRepository.save(entity);
 
         return NotificationMapper.toResponseDto(saved);
     }
@@ -35,7 +35,7 @@ public class NotificationServiceImpl implements NotificationService {
 
     @Override
     public List<NotificationResponseDto> getByUserId(Long userId) {
-        List<Notification> notification =  notificationRepository.findByUserId(userId);
+        List<Notifications> notification =  notificationRepository.findByUserId(userId);
 
         if(notification.isEmpty()){
             throw new NotificationIdNotFoundException(
@@ -49,7 +49,7 @@ public class NotificationServiceImpl implements NotificationService {
 
     @Override
     public List<NotificationResponseDto> getAllNotification() {
-        List<Notification> notification =  notificationRepository.findAll();
+        List<Notifications> notification =  notificationRepository.findAll();
 
         return notification.stream()
                 .map(NotificationMapper :: toResponseDto)
@@ -58,7 +58,7 @@ public class NotificationServiceImpl implements NotificationService {
 
     @Override
     public List<NotificationResponseDto> getNotificationByStatus(NotificationStatus status) {
-        List<Notification> notification =  notificationRepository.findByStatus(status);
+        List<Notifications> notification =  notificationRepository.findByStatus(status);
 
         if(notification.isEmpty()){
             throw new NotificationStatusNotFoundException(
@@ -73,7 +73,7 @@ public class NotificationServiceImpl implements NotificationService {
     @Override
     public List<NotificationResponseDto> getNotificationByType(NotificationType type) {
 
-        List<Notification> notification =  notificationRepository.findByNotificationType(type);
+        List<Notifications> notification =  notificationRepository.findByNotificationType(type);
 
         if(notification.isEmpty()){
             throw new NotificationTypeNotFoundException(
