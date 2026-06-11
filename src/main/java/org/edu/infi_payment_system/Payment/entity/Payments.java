@@ -34,7 +34,7 @@ public class Payments {
 
     @Positive
     @Column(nullable = false)
-    private BigDecimal Amount;
+    private BigDecimal amount;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)

@@ -2,6 +2,7 @@ package org.edu.infi_payment_system.Ledger.service;
 
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.edu.infi_payment_system.Ledger.dto.LedgerResponseDto;
 import org.edu.infi_payment_system.Ledger.entity.Ledgers;
 import org.edu.infi_payment_system.Ledger.enums.TransactionStatus;
@@ -14,6 +15,7 @@ import java.math.BigDecimal;
 import java.util.List;
 import java.util.UUID;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class LedgerServiceImpl implements LedgerService {
@@ -29,8 +31,10 @@ public class LedgerServiceImpl implements LedgerService {
             BigDecimal amount
     ) {
 
+        log.info("Ledger pairEntryId is created!");
         String pairEntryId = java.util.UUID.randomUUID().toString();
 
+        log.info("debitEntry is created!");
         Ledgers debitEntry = CreateDebitEntry.createDebitEntry(
                 transactionId ,
                 pairEntryId ,
@@ -39,6 +43,7 @@ public class LedgerServiceImpl implements LedgerService {
                 amount
         );
 
+        log.info("creditEntry is created!");
         Ledgers creditEntry = CreateCreditEntry.createCreditEntry(
                 transactionId ,
                 pairEntryId ,
@@ -48,6 +53,8 @@ public class LedgerServiceImpl implements LedgerService {
         );
 
         transactionRepository.saveAll(List.of(debitEntry, creditEntry));
+
+        log.info("ledger entry's are completed!");
 
         LedgerResponseDto response = new LedgerResponseDto();
         response.setTransactionId(transactionId);

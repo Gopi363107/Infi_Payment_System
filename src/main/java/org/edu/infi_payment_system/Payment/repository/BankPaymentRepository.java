@@ -5,17 +5,19 @@ import org.edu.infi_payment_system.Payment.entity.Payments;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Lock;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.stereotype.Repository;
 
 import java.util.Optional;
 import java.util.UUID;
 
+@Repository
 public interface BankPaymentRepository
         extends JpaRepository<Payments, UUID> {
 
     @Lock(LockModeType.PESSIMISTIC_WRITE)
     @Query("""
        SELECT p
-       FROM BankPayment p
+       FROM Payments p
        WHERE p.paymentId = :paymentId
        """)
     Optional<Payments> findByPaymentIdForUpdate(

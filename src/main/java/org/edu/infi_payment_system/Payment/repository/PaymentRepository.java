@@ -8,6 +8,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Lock;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
+import org.springframework.stereotype.Repository;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -15,6 +16,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
+@Repository
 public interface PaymentRepository extends JpaRepository<Payments, UUID> {
     List<Payments>  findBySenderAccountIdOrReceiverAccountId(UUID senderId, UUID receiverId);
     List<Payments> findByStatus(PaymentStatus status);
@@ -26,7 +28,7 @@ public interface PaymentRepository extends JpaRepository<Payments, UUID> {
     @Lock(LockModeType.PESSIMISTIC_WRITE)
     @Query("""
        SELECT p
-       FROM BankPayment p
+       FROM Payments p
        WHERE p.paymentId = :paymentId
        """)
     Optional<Payments> findByPaymentIdForUpdate(
@@ -60,5 +62,4 @@ AND p.createdAt >= :time
        """)
     long countFailedPayments(UUID accountId);
 
-    UUID getPaymentId();
 }

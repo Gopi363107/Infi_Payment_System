@@ -2,6 +2,7 @@ package org.edu.infi_payment_system.Transaction.service;
 
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.edu.infi_payment_system.Account.entity.Accounts;
 import org.edu.infi_payment_system.Account.repository.AccountRepository;
 import org.edu.infi_payment_system.Audit.enums.AuditAction;
@@ -21,6 +22,7 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.UUID;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class TransactionServiceImpl implements TransactionService{
@@ -47,6 +49,7 @@ public class TransactionServiceImpl implements TransactionService{
         UUID senderId = transactionRequest.getSenderId();
         UUID receiverId = transactionRequest.getReceiverId();
 
+        log.info("Sender and receiver id locked!");
         // 2. if sender and receiver try to transfer payment same
         // time so we have to find which process do first
         UUID firstLockId =
@@ -71,12 +74,14 @@ public class TransactionServiceImpl implements TransactionService{
                 receiverId
         );
 
+        log.info("Deadlock is prevented!");
         Accounts sender = firstAccount.getAccountId().equals(senderId)
                 ? firstAccount : secondAccount ;
 
         Accounts receiver = firstAccount.getAccountId().equals(senderId)
                 ? secondAccount : firstAccount ;
 
+        log.info("Balance checking is initiated!");
         // 4. check the sender balance if not enough balance then throw error
         if(sender.getBalance().compareTo(transactionRequest.getAmount()) < 0){
             auditService.saveAudit(
@@ -85,6 +90,7 @@ public class TransactionServiceImpl implements TransactionService{
                     transactionRequest.getSenderId(),
                     transactionRequest.getReceiverId()
             );
+            log.error("Insufficient balance!");
             throw new InsufficientBalanceException(
                     "Insufficient balance!"
             );
@@ -95,6 +101,7 @@ public class TransactionServiceImpl implements TransactionService{
                 sender.getBalance().subtract(transactionRequest.getAmount())
         );
 
+        log.info("Balance deducted!");
         auditService.saveAudit(
                 transactionRequest.getPaymentId(),
                 AuditAction.DEBIT_SUCCESS,
@@ -107,6 +114,7 @@ public class TransactionServiceImpl implements TransactionService{
                 receiver.getBalance().add(transactionRequest.getAmount())
         );
 
+        log.info("Balance credited!");
         auditService.saveAudit(
                 transactionRequest.getPaymentId(),
                 AuditAction.CREDIT_SUCCESS,
@@ -114,6 +122,7 @@ public class TransactionServiceImpl implements TransactionService{
                 transactionRequest.getReceiverId()
         );
 
+        log.info("Transaction is saved!");
         // 7. save the sender and receiver account in DB
         accountRepository.save(sender);
         accountRepository.save(receiver);
@@ -125,7 +134,7 @@ public class TransactionServiceImpl implements TransactionService{
                 receiver.getAccountId(),
                 transactionRequest.getAmount()
         );
-
+        log.info("Ledger entry created!");
         auditService.saveAudit(
                 transactionRequest.getPaymentId(),
                 AuditAction.LEDGER_ENTRY_COMPLETED,
@@ -133,6 +142,7 @@ public class TransactionServiceImpl implements TransactionService{
                 transactionRequest.getReceiverId()
         );
 
+        log.info("Auditing completed!");
         // 9. save the transaction in the transaction repository
         Transactions transaction = Transactions.builder()
                 .paymentId(transactionRequest.getPaymentId())
@@ -150,7 +160,7 @@ public class TransactionServiceImpl implements TransactionService{
                 transactionRequest.getSenderId(),
                 transactionRequest.getReceiverId()
         );
-
+        log.info("Transaction success!");
         // 10. send the response to sender about the transaction
         return transactionMapper.toResponseDto(savedTransaction);
     }

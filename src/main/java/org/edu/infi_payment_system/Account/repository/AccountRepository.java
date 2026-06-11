@@ -20,7 +20,7 @@ public interface AccountRepository extends JpaRepository<Accounts, UUID> {
     // pessimistic lock is used to solve race condition in concurrency control
     @Lock(LockModeType.PESSIMISTIC_WRITE)
     @Query("SELECT a FROM Accounts a WHERE a.accountId = :accountId")
-    Optional<Accounts> findByAccountIdForUpdate(UUID accountId);
+    Optional<Accounts> findByAccountIdForUpdate(@NotNull(message = "Id is required") UUID accountId);
 
 
 }

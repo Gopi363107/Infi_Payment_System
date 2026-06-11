@@ -13,9 +13,9 @@ import java.time.LocalDateTime;
 @RestControllerAdvice
 public class TransactionExceptionHandler {
 
-    private ErrorResponse buildError(String errorCode ,String message, HttpStatus status) {
+    private ErrorResponse buildError(String message, HttpStatus status) {
         return ErrorResponse.builder()
-                .errorCode(errorCode)
+                .errorCode(ErrorCodes.INSUFFICIENT_BALANCE)
                 .message(message)
                 .status(status.value())
                 .createdAt(LocalDateTime.now())
@@ -26,7 +26,7 @@ public class TransactionExceptionHandler {
     public ResponseEntity<ErrorResponse> handleInsufficientBalance(InsufficientBalanceException ex){
 
         return new ResponseEntity<>(
-                buildError(ErrorCodes.INSUFFICIENT_BALANCE,ex.getMessage(), HttpStatus.PAYMENT_REQUIRED)
+                buildError(ex.getMessage(), HttpStatus.PAYMENT_REQUIRED)
                 ,HttpStatus.PAYMENT_REQUIRED
         );
     }

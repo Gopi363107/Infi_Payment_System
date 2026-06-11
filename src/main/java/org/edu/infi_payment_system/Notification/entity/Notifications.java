@@ -6,18 +6,16 @@ import org.edu.infi_payment_system.Notification.enums.NotificationReferenceType;
 import org.edu.infi_payment_system.Notification.enums.NotificationStatus;
 import org.edu.infi_payment_system.Notification.enums.NotificationType;
 import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 @Entity
 @Table(name = "notifications" , indexes = {
         @Index(name = "to_idx_notification_userId" , columnList = "userId"),
-        @Index(name = "to_idx_notification_type" , columnList = "notificationType"),
-        @Index(
-                name = "idx_notification_user_created",
-                columnList = "userId, createdAt"
-        ),
-        @Index(name = "idx_notification_status", columnList = "status")
+        @Index(name = "idx_notification_status", columnList = "status"),
+        @Index(name="idx_notification_retry" , columnList = "status,nextRetryAt")
 })
 @Getter
 @Setter
@@ -27,16 +25,17 @@ import java.time.LocalDateTime;
 public class Notifications {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    @GeneratedValue(strategy = GenerationType.UUID)
+    @NonNull
+    private UUID id;
 
     @Column(nullable = false)
-    private Long userId;
+    private UUID userId;
 
     @Column(nullable = false)
-    private Long referenceId;
+    private UUID referenceId;
 
-    @Column(length = 150)
+    @Column(nullable = false, length = 100)
     private String title;
 
     @Column(length = 1000)
@@ -44,7 +43,7 @@ public class Notifications {
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private NotificationReferenceType referenceType;
+    private NotificationReferenceType notificationReferenceType;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
@@ -54,11 +53,13 @@ public class Notifications {
     @Column(nullable = false)
     private NotificationStatus status;
 
-    @Column(nullable = false)
+    private LocalDateTime nextRetryAt;
+
     @CreationTimestamp
     private LocalDateTime createdAt;
 
-    @Column(nullable = false)
-    private LocalDateTime readAt;
+    @UpdateTimestamp
+    private LocalDateTime updatedAt;
 
+    private boolean isRead;
 }

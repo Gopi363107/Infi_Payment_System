@@ -45,7 +45,7 @@ public class Users implements UserDetails {
     @Column(name = "is_verified", nullable = false)
     private Boolean verified = false;
 
-    @ManyToOne(cascade = CascadeType.ALL)
+    @OneToMany(cascade = CascadeType.ALL)
     private List<Accounts> accounts;
 
     @Column(name = "mobile_number", unique = true, nullable = false, length = 15)

@@ -11,6 +11,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/v1/notifications")
@@ -25,13 +26,36 @@ public class NotificationController {
         return ResponseEntity.ok(notificationService.createNotification(dto));
     }
 
-    @GetMapping("/userId/{userId}")
-    public ResponseEntity<List<NotificationResponseDto>> getByUserId(@PathVariable Long userId){
+    @PostMapping("/{notificationId}/retry")
+    public ResponseEntity<NotificationService> retryNotification(@PathVariable UUID notificationId){
+        return ResponseEntity.ok(notificationService.retryNotification(notificationId));
+    }
+
+    @GetMapping("/user/{userId}")
+    public ResponseEntity<List<NotificationResponseDto>> getByUserId(@PathVariable UUID userId){
         return ResponseEntity.ok(notificationService.getByUserId(userId));
     }
 
+    @GetMapping("/{notificationId}")
+    public ResponseEntity<NotificationResponseDto> getById(@PathVariable UUID notificationId){
+        return ResponseEntity.ok(
+                notificationService.getById(notificationId)
+        );
+    }
+
+    @PatchMapping("/{notificationId}/read")
+    public ResponseEntity<NotificationResponseDto> markAsRead(@PathVariable UUID notificationId){
+
+        return ResponseEntity.ok(
+                notificationService.markAsRead(notificationId)
+        );
+    }
+
     @GetMapping
-    public ResponseEntity<List<NotificationResponseDto>> getAllNotification(){
+    public ResponseEntity<List<NotificationResponseDto>> getAllNotification(
+            @RequestParam(defaultValue = "0")int page,
+            @RequestParam(defaultValue = "10")int size){
+
         return ResponseEntity.ok(notificationService.getAllNotification());
     }
 

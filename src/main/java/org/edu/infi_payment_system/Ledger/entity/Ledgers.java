@@ -10,7 +10,7 @@ import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Entity
-@Table(name = "transaction_ledger" ,indexes = {
+@Table(name = "ledger" ,indexes = {
     @Index(name = "idx_account_id" , columnList = "accountId"),
     @Index(name = "idx_transaction_id" , columnList = "transactionId"),
     @Index(name = "idx_reference_id" , columnList = "referenceId"),

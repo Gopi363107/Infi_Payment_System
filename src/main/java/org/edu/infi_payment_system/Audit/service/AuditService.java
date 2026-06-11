@@ -14,6 +14,7 @@ Reason:
  */
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.edu.infi_payment_system.Audit.entity.AuditLogs;
 import org.edu.infi_payment_system.Audit.enums.AuditAction;
 import org.edu.infi_payment_system.Audit.repository.AuditRepository;
@@ -24,6 +25,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class AuditService {

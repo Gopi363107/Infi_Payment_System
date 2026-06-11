@@ -15,7 +15,7 @@ import java.util.UUID;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-@Table(name = "bank_accounts", indexes = {
+@Table(name = "accounts", indexes = {
         @Index(name = "idx_last4", columnList = "last4Digits"),
         @Index(name = "idx_user_id", columnList = "user_id")
 })
@@ -74,8 +74,6 @@ public class Accounts {
     public void createdAt(){
         this.createdAt = LocalDateTime.now();
     }
-    @PreUpdate
-    public void preUpdate(){this.updatedAt = LocalDateTime.now();}
 
     @PreUpdate
     public void updatedAt(){

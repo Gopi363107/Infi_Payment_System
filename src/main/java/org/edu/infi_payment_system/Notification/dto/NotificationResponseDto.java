@@ -6,6 +6,7 @@ import org.edu.infi_payment_system.Notification.enums.NotificationStatus;
 import org.edu.infi_payment_system.Notification.enums.NotificationType;
 
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 @Getter
 @Setter
@@ -14,9 +15,9 @@ import java.time.LocalDateTime;
 @Builder
 public class NotificationResponseDto {
 
-    private Long notificationId;
-    private Long userId;
-    private Long referenceId;
+    private UUID notificationId;
+    private UUID userId;
+    private UUID referenceId;
     private String title;
     private String message;
     private NotificationType type;

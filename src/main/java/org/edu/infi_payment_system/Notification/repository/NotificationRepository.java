@@ -5,13 +5,24 @@ import org.edu.infi_payment_system.Notification.enums.NotificationStatus;
 import org.edu.infi_payment_system.Notification.enums.NotificationType;
 import org.springframework.data.jpa.repository.JpaRepository;
 
+import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
 
-public interface NotificationRepository extends JpaRepository<Notifications, Long> {
+public interface NotificationRepository extends JpaRepository<Notifications, UUID> {
 
     List<Notifications> findByStatus(NotificationStatus status);
 
     List<Notifications> findByNotificationType(NotificationType type);
 
-    List<Notifications> findByUserId(Long userId);
+    List<Notifications> findByUserIdOrderByCreatedAtDesc(UUID userId);
+
+    Optional<Notifications> findById(UUID id);
+
+    List<Notifications> findByUserIdAndReadAtIsNull(UUID userId);
+
+    List<Notifications> findByStatusAndNextRetryAtBefore(NotificationStatus status ,
+                                                         LocalDateTime time);
+
 }

@@ -1,6 +1,7 @@
 package org.edu.infi_payment_system.Payment.service;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.edu.infi_payment_system.Account.entity.Accounts;
 import org.edu.infi_payment_system.Account.repository.AccountRepository;
 import org.edu.infi_payment_system.Audit.enums.AuditAction;
@@ -24,6 +25,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class PaymentServiceImpl implements PaymentService{
@@ -40,6 +42,8 @@ public class PaymentServiceImpl implements PaymentService{
     @Transactional
     public PaymentResponseDto createPayment(PaymentRequestDto paymentRequest){
 
+        log.info("Payment started");
+
         // 1.fetch sender account
         Accounts sender  = (Accounts) accountRepository
                 .findByAccountId(paymentRequest.getSenderAccountId())
@@ -51,21 +55,29 @@ public class PaymentServiceImpl implements PaymentService{
                 .orElseThrow(() -> new AccountNotFoundException("receiver account not found"));
 
         if(sender.getAccountId().equals(receiver.getAccountId())){
+            log.error("Sender and Receiver ID is same");
             throw new InvalidPaymentException("Sender and receiver cannot be same.");
         }
+
+        log.info("Sender and Receiver ID check completed");
 
         // 3. idempotency key check
         Payments existing = paymentRepository
                 .findByIdempotencyKey(paymentRequest.getIdempotencyKey());
 
         if(existing != null){
+            log.error("Same Idempotency is detected");
             return paymentMapper.toResponseDto(existing);
         }
+
+        log.info("Duplicate payment is checked!");
 
         // 4. create  payment entity (pending)
         Payments payment = paymentMapper.toEntity(paymentRequest);
         payment.setStatus(PaymentStatus.PENDING);
         paymentRepository.save(payment);
+
+        log.info("Payment initialised!");
 
         auditService.saveAudit(
                 payment.getPaymentId(),
@@ -73,6 +85,8 @@ public class PaymentServiceImpl implements PaymentService{
                 paymentRequest.getSenderAccountId(),
                 paymentRequest.getReceiverAccountId()
         );
+
+        log.info("Fraud Check Started");
 
         // 5. Fraud detection check using Rules
         FraudCheckResult fraudCheckResult = fraudService.checkResult(paymentRequest);
@@ -84,11 +98,15 @@ public class PaymentServiceImpl implements PaymentService{
                     paymentRequest.getSenderAccountId(),
                     paymentRequest.getReceiverAccountId()
             );
+            log.error("Fraud payment request detected!");
             throw new RuntimeException(
                     fraudCheckResult.getReason()
             );
         }
 
+        log.info("Fraud check passed!");
+
+        log.info("Money transaction is started!");
         // 6.create a transaction request to process payment
         TransactionRequestDto transactionRequest = transactionRequestMapper.toRequest(
                 payment,
@@ -103,6 +121,8 @@ public class PaymentServiceImpl implements PaymentService{
                     paymentRequest.getReceiverAccountId()
             );
 
+            log.info("Money transaction is processing!");
+
             transactionService.processTransaction(transactionRequest);
 
             payment.setStatus(PaymentStatus.SUCCESS);
@@ -116,8 +136,12 @@ public class PaymentServiceImpl implements PaymentService{
             );
 
             paymentRepository.save(payment);
+
+            log.info("Payment success!");
         }
         catch(Exception e){
+
+            log.error("Payment Failed!");
 
             // 9. Mark Payment FAILED
             payment.setStatus(PaymentStatus.FAILED);
@@ -135,11 +159,13 @@ public class PaymentServiceImpl implements PaymentService{
             throw e;
         }
         auditService.saveAudit(
-                paymentRepository.getPaymentId(),
+                payment.getPaymentId(),
                 AuditAction.PAYMENT_COMPLETED,
                 paymentRequest.getSenderAccountId(),
                 paymentRequest.getReceiverAccountId()
         );
+        log.info("Payment process is completed!");
+
         return paymentMapper.toResponseDto(payment);
     }
 
