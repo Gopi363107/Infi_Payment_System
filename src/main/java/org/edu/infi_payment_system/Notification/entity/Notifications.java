@@ -53,6 +53,10 @@ public class Notifications {
     @Column(nullable = false)
     private NotificationStatus status;
 
+    @Column(nullable = false)
+    @Builder.Default
+    private int retryCount = 0;
+
     private LocalDateTime nextRetryAt;
 
     @CreationTimestamp
@@ -61,5 +65,5 @@ public class Notifications {
     @UpdateTimestamp
     private LocalDateTime updatedAt;
 
-    private boolean isRead;
+    private boolean readAt;
 }
