@@ -65,6 +65,8 @@ public class NotificationRetryScheduler {
                         notification.getId(),
                         ex
                 );
+                handleRetry(notification);
+
             }
         }
     }

@@ -1,3 +1,8 @@
+package org.edu.infi_payment_system.Config;
+
+public class SecurityConfiguration {
+}
+
 /*package org.edu.infi_payment_system.Config;
 
 import org.springframework.context.annotation.Bean;

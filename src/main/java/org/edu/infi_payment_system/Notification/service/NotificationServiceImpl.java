@@ -17,6 +17,7 @@ import org.springframework.retry.annotation.Recover;
 import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -33,9 +34,9 @@ public class NotificationServiceImpl implements NotificationService {
             backoff = @Backoff(delay = 5000)
     )
     @Override
-    public NotificationResponseDto createNotification(NotificationRequestDto dto) {
+    public NotificationResponseDto sendNotification(NotificationRequestDto dto) {
 
-        Notifications entity = NotificationMapper.toEntity(dto);
+        Notifications notification = NotificationMapper.toEntity(dto);
 
         if(serviceUnavailable()) {
             throw new NotificationSendException(
@@ -43,44 +44,84 @@ public class NotificationServiceImpl implements NotificationService {
             );
         }
 
-        System.out.println("Notification Sent");
-        Notifications saved =  notificationRepository.save(entity);
+        notification.setRetryCount(
+                notification.getRetryCount() + 1
+        );
+
+        notification.setStatus(NotificationStatus.SENT);
+        notification.setNextRetryAt(
+                null
+        );
+        Notifications saved = notificationRepository.save(notification);
 
         return NotificationMapper.toResponseDto(saved);
     }
+
     @Recover
-    public NotificationResponseDto recover(
-            NotificationSendException ex,
-            NotificationRequestDto dto
+    public NotificationResponseDto recover(NotificationSendException ex, NotificationRequestDto dto
     ){
 
-        Notifications entity =
-                NotificationMapper.toEntity(dto);
+        Notifications notification = NotificationMapper.toEntity(dto);
 
-        entity.setStatus(
+        notification.setStatus(
                 NotificationStatus.FAILED
         );
+        notification.setNextRetryAt(
+                LocalDateTime.now().plusMinutes(5)
+        );
 
-        Notifications saved =
-                notificationRepository.save(entity);
+        Notifications saved = notificationRepository.save(notification);
 
-        return NotificationMapper
-                .toResponseDto(saved);
+        return NotificationMapper.toResponseDto(saved);
     }
 
     @Override
     public NotificationResponseDto retryNotification(UUID notificationId) {
-        return null;
+
+        Notifications notification = notificationRepository
+                .findById(notificationId).orElseThrow(
+                        ()-> new NotificationIdNotFoundException(
+                                "Notification id is not found!" + notificationId
+                        )
+                );
+
+        if(notification.getStatus() != NotificationStatus.FAILED){
+            throw new NotificationSendException(
+                    "Only FAILED notifications can be retried"
+            );
+        }
+
+        notification.setStatus(NotificationStatus.SENT);
+        notification.setRetryCount(
+                notification.getRetryCount() + 1
+        );
+        Notifications saved = notificationRepository.save(notification);
+
+        return NotificationMapper.toResponseDto(saved);
     }
 
     @Override
     public NotificationResponseDto getById(UUID notificationId) {
-        return null;
+        Notifications notification = notificationRepository
+                .findById(notificationId).orElseThrow(
+                        ()-> new NotificationIdNotFoundException(
+                        "Notification id is not found!" + notificationId
+                )
+        );
+
+        return NotificationMapper.toResponseDto(notification);
     }
 
     @Override
     public NotificationResponseDto markAsRead(UUID notificationId) {
-        return null;
+        Notifications notification = notificationRepository.findById(notificationId).orElseThrow(
+                ()-> new NotificationIdNotFoundException("Notification id is not found!" + notificationId)
+        );
+
+        notification.setStatus(NotificationStatus.READ);
+        notification.setReadAt(LocalDateTime.now());
+        Notifications saved = notificationRepository.save(notification);
+        return NotificationMapper.toResponseDto(saved);
     }
 
     @Override
@@ -134,4 +175,9 @@ public class NotificationServiceImpl implements NotificationService {
                 .map(NotificationMapper :: toResponseDto)
                 .collect(Collectors.toList());
     }
+
+    private boolean serviceUnavailable(){
+        return Math.random() < 0.7;
+    }
+
 }

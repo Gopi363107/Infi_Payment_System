@@ -2,7 +2,7 @@ package org.edu.infi_payment_system.Notification.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
-import org.edu.infi_payment_system.Notification.enums.NotificationReferenceType;
+import org.edu.infi_payment_system.Notification.enums.ReferenceType;
 import org.edu.infi_payment_system.Notification.enums.NotificationStatus;
 import org.edu.infi_payment_system.Notification.enums.NotificationType;
 import org.hibernate.annotations.CreationTimestamp;
@@ -26,7 +26,6 @@ public class Notifications {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
-    @NonNull
     private UUID id;
 
     @Column(nullable = false)
@@ -43,7 +42,7 @@ public class Notifications {
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private NotificationReferenceType notificationReferenceType;
+    private ReferenceType ReferenceType;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
@@ -65,5 +64,5 @@ public class Notifications {
     @UpdateTimestamp
     private LocalDateTime updatedAt;
 
-    private boolean readAt;
+    private LocalDateTime readAt;
 }

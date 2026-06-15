@@ -25,4 +25,5 @@ public interface NotificationRepository extends JpaRepository<Notifications, UUI
     List<Notifications> findByStatusAndNextRetryAtBefore(NotificationStatus status ,
                                                          LocalDateTime time);
 
+    List<Notifications> findByUserId(UUID userId);
 }

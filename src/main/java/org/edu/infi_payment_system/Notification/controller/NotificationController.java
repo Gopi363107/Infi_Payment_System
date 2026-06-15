@@ -21,13 +21,13 @@ public class NotificationController {
     private final NotificationService notificationService;
 
     @PostMapping
-    public ResponseEntity<NotificationResponseDto> createNotification(
+    public ResponseEntity<NotificationResponseDto> sendNotification(
             @Valid @RequestBody NotificationRequestDto dto){
-        return ResponseEntity.ok(notificationService.createNotification(dto));
+        return ResponseEntity.ok(notificationService.sendNotification(dto));
     }
 
     @PostMapping("/{notificationId}/retry")
-    public ResponseEntity<NotificationService> retryNotification(@PathVariable UUID notificationId){
+    public ResponseEntity<NotificationResponseDto> retryNotification(@PathVariable UUID notificationId){
         return ResponseEntity.ok(notificationService.retryNotification(notificationId));
     }
 

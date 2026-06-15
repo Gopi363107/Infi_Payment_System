@@ -4,7 +4,7 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.*;
-import org.edu.infi_payment_system.Notification.enums.NotificationReferenceType;
+import org.edu.infi_payment_system.Notification.enums.ReferenceType;
 import org.edu.infi_payment_system.Notification.enums.NotificationType;
 
 import java.util.UUID;
@@ -15,9 +15,6 @@ import java.util.UUID;
 @AllArgsConstructor
 @Builder
 public class NotificationRequestDto {
-
-    @NotNull(message = "reference id is required")
-    private UUID referenceId;
 
     @NotNull(message = "user id is required")
     private UUID userId;
@@ -30,8 +27,11 @@ public class NotificationRequestDto {
     @NotBlank(message = "message is required")
     private String message;
 
+    @NotNull(message = "reference id is required!")
+    private UUID referenceId;
+
     @NotNull(message = "reference type is required")
-    private NotificationReferenceType notificationReferenceType;
+    private ReferenceType notificationReferenceType;
 
     @NotNull(message = "notification type is required")
     private NotificationType type;

@@ -8,6 +8,8 @@ import org.edu.infi_payment_system.Audit.enums.AuditAction;
 import org.edu.infi_payment_system.Audit.service.AuditService;
 import org.edu.infi_payment_system.FraudCheck.dto.FraudCheckResult;
 import org.edu.infi_payment_system.FraudCheck.service.FraudService;
+import org.edu.infi_payment_system.Notification.event.PaymentCompletedEvent;
+import org.edu.infi_payment_system.Notification.event.Publisher.EventPublisher;
 import org.edu.infi_payment_system.Payment.dto.PaymentRequestDto;
 import org.edu.infi_payment_system.Payment.dto.PaymentResponseDto;
 import org.edu.infi_payment_system.Payment.entity.Payments;
@@ -37,6 +39,8 @@ public class PaymentServiceImpl implements PaymentService{
     private final TransactionRequestMapper transactionRequestMapper;
     private final FraudService fraudService;
     private final AuditService auditService;
+    private final EventPublisher eventPublisher;
+
 
     @Override
     @Transactional
@@ -165,6 +169,20 @@ public class PaymentServiceImpl implements PaymentService{
                 paymentRequest.getReceiverAccountId()
         );
         log.info("Payment process is completed!");
+
+        PaymentCompletedEvent event = PaymentCompletedEvent.builder()
+                .paymentId(payment.getPaymentId())
+                .senderId(
+                        payment.getSenderAccountId()
+                )
+                .receiverId(
+                        payment.getReceiverAccountId()
+                )
+                .amount(payment.getAmount())
+                .status(PaymentStatus.SUCCESS)
+                .build();
+
+        eventPublisher.publishPaymentCompletedEvent(event);
 
         return paymentMapper.toResponseDto(payment);
     }

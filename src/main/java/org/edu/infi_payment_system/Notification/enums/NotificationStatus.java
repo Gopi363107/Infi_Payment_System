@@ -4,6 +4,7 @@ public enum NotificationStatus {
     PENDING,
     SENT,
     FAILED,
+    READ,
     RETRYING,
     EXPIRED
 }

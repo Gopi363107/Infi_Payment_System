@@ -10,7 +10,7 @@ import java.util.UUID;
 
 public interface NotificationService {
 
-    NotificationResponseDto createNotification(NotificationRequestDto dto);
+    NotificationResponseDto sendNotification(NotificationRequestDto dto);
     List<NotificationResponseDto> getByUserId(UUID userId);
     List<NotificationResponseDto> getAllNotification();
     List<NotificationResponseDto> getNotificationByStatus(NotificationStatus status);
