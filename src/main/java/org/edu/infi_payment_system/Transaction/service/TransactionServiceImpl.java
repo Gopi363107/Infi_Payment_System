@@ -7,6 +7,7 @@ import org.edu.infi_payment_system.Account.entity.Accounts;
 import org.edu.infi_payment_system.Account.repository.AccountRepository;
 import org.edu.infi_payment_system.Audit.enums.AuditAction;
 import org.edu.infi_payment_system.Audit.service.AuditService;
+import org.edu.infi_payment_system.Cache.service.AccountCacheService;
 import org.edu.infi_payment_system.Ledger.service.LedgerService;
 import org.edu.infi_payment_system.Transaction.dto.TransactionRequestDto;
 import org.edu.infi_payment_system.Transaction.dto.TransactionResponseDto;
@@ -32,6 +33,7 @@ public class TransactionServiceImpl implements TransactionService{
     private final LedgerService ledgerService;
     private final TransactionMapper transactionMapper;
     private final AuditService auditService;
+    private final AccountCacheService accountCacheService;
 
     @Override
     @Transactional
@@ -127,6 +129,9 @@ public class TransactionServiceImpl implements TransactionService{
         accountRepository.save(sender);
         accountRepository.save(receiver);
 
+        AccountCacheService.save(sender);
+        AccountCacheService.save(receiver);
+
         // 8. create a ledger entry to store the amount balance in both sender and receiver account
         ledgerService.createDoubleEntryLedger(
                 transactionRequest.getPaymentId(),
@@ -163,6 +168,24 @@ public class TransactionServiceImpl implements TransactionService{
         log.info("Transaction success!");
         // 10. send the response to sender about the transaction
         return transactionMapper.toResponseDto(savedTransaction);
+    }
+
+    public Accounts getAccount(UUID id) {
+
+        Accounts cached =
+                accountCacheService.get(id);
+
+        if (cached != null) {
+            return cached;
+        }
+
+        Accounts account =
+                accountRepository.findById(id)
+                        .orElseThrow();
+
+        accountCacheService.save(account);
+
+        return account;
     }
 
     @Override

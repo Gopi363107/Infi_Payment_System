@@ -3,6 +3,7 @@ package org.edu.infi_payment_system.Auth.config;
 import lombok.RequiredArgsConstructor;
 import org.edu.infi_payment_system.Auth.filter.JwtAuthenticationFilter;
 import org.edu.infi_payment_system.Auth.service.CustomUserDetailService;
+import org.edu.infi_payment_system.RateLimiting.filter.RateLimitingFilter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -22,6 +23,7 @@ public class SecurityConfig {
 
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
     private final CustomUserDetailService userDetailService;
+    private final RateLimitingFilter rateLimitingFilter;
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception{
@@ -39,8 +41,14 @@ public class SecurityConfig {
 
                 )
                 .userDetailsService(userDetailService)
-                .addFilterBefore(jwtAuthenticationFilter
-                , UsernamePasswordAuthenticationFilter.class);
+                .addFilterBefore(
+                        rateLimitingFilter,
+                        UsernamePasswordAuthenticationFilter.class
+                )
+                .addFilterAfter(
+                        jwtAuthenticationFilter,
+                        RateLimitingFilter.class
+                );
 
         return http.build();
     }
