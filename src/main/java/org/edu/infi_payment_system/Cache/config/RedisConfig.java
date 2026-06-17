@@ -1,4 +1,4 @@
-package org.edu.infi_payment_system.Config;
+package org.edu.infi_payment_system.Cache.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

@@ -1,22 +1,22 @@
 package org.edu.infi_payment_system.Transaction.service;
 
-import org.edu.infi_payment_system.Account.entity.Accounts;
-import org.edu.infi_payment_system.Payment.entity.Payments;
+
 import org.edu.infi_payment_system.Transaction.dto.TransactionRequestDto;
 import org.edu.infi_payment_system.Transaction.dto.TransactionResponseDto;
 import org.edu.infi_payment_system.Transaction.enums.TransactionStatus;
 
-import java.math.BigDecimal;
+
 import java.util.List;
 import java.util.UUID;
 
 public interface TransactionService {
 
-    TransactionResponseDto processTransaction(TransactionRequestDto transactionRequest);
+    void processTransaction(TransactionRequestDto transactionRequest);
     TransactionResponseDto getByPaymentId(UUID paymentId);
     TransactionResponseDto getByTransactionId(UUID transactionId);
     List<TransactionResponseDto> getByTransactionStatus(TransactionStatus status);
     List<TransactionResponseDto> getAllTransaction();
+
 }
 /*
 

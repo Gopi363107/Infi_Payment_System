@@ -8,6 +8,7 @@ import org.edu.infi_payment_system.Account.repository.AccountRepository;
 import org.edu.infi_payment_system.Audit.enums.AuditAction;
 import org.edu.infi_payment_system.Audit.service.AuditService;
 import org.edu.infi_payment_system.Cache.service.AccountCacheService;
+import org.edu.infi_payment_system.Cache.service.TransactionCacheService;
 import org.edu.infi_payment_system.Ledger.service.LedgerService;
 import org.edu.infi_payment_system.Transaction.dto.TransactionRequestDto;
 import org.edu.infi_payment_system.Transaction.dto.TransactionResponseDto;
@@ -34,10 +35,11 @@ public class TransactionServiceImpl implements TransactionService{
     private final TransactionMapper transactionMapper;
     private final AuditService auditService;
     private final AccountCacheService accountCacheService;
+    private final TransactionCacheService transactionCacheService;
 
     @Override
     @Transactional
-    public TransactionResponseDto processTransaction(TransactionRequestDto transactionRequest) {
+    public void processTransaction(TransactionRequestDto transactionRequest) {
 
 
         auditService.saveAudit(
@@ -129,8 +131,8 @@ public class TransactionServiceImpl implements TransactionService{
         accountRepository.save(sender);
         accountRepository.save(receiver);
 
-        AccountCacheService.save(sender);
-        AccountCacheService.save(receiver);
+        accountCacheService.save(sender);
+        accountCacheService.save(receiver);
 
         // 8. create a ledger entry to store the amount balance in both sender and receiver account
         ledgerService.createDoubleEntryLedger(
@@ -159,6 +161,11 @@ public class TransactionServiceImpl implements TransactionService{
 
         Transactions savedTransaction =  transactionRepository.save(transaction);
 
+        transactionCacheService.save(
+                savedTransaction.getTransactionId(),
+                savedTransaction.getTransactionStatus()
+        );
+
         auditService.saveAudit(
                 transactionRequest.getPaymentId(),
                 AuditAction.TRANSACTION_SUCCESS,
@@ -167,7 +174,7 @@ public class TransactionServiceImpl implements TransactionService{
         );
         log.info("Transaction success!");
         // 10. send the response to sender about the transaction
-        return transactionMapper.toResponseDto(savedTransaction);
+        transactionMapper.toResponseDto(savedTransaction);
     }
 
     public Accounts getAccount(UUID id) {
@@ -186,6 +193,28 @@ public class TransactionServiceImpl implements TransactionService{
         accountCacheService.save(account);
 
         return account;
+    }
+
+    public TransactionStatus getTransactionStatus(UUID transactionId){
+
+        String id = transactionId.toString();
+
+        TransactionStatus cached = transactionCacheService.get(transactionId);
+
+        if(cached != null){
+            return cached;
+        }
+
+        Transactions transaction = transactionRepository.findByTransactionId(transactionId)
+                .orElseThrow();
+
+        transactionCacheService.save(
+                transaction.getTransactionId(),
+                transaction.getTransactionStatus()
+        );
+
+        return transaction.getTransactionStatus();
+
     }
 
     @Override
