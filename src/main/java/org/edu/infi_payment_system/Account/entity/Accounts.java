@@ -27,7 +27,7 @@ public class Accounts {
     private UUID accountId;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id" , nullable = false)
+    @JoinColumn(name = "user_id", nullable = false)
     private Users user;
 
     @Column(nullable = false , length = 100)
@@ -71,10 +71,10 @@ public class Accounts {
     private LocalDateTime deletedAt;
 
     @PrePersist
-    public void createdAt(){
+    public void prePersist() {
         this.createdAt = LocalDateTime.now();
+        this.updatedAt = LocalDateTime.now();
     }
-
     @PreUpdate
     public void updatedAt(){
         this.updatedAt = LocalDateTime.now();

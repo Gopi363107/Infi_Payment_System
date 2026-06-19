@@ -18,6 +18,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.edu.infi_payment_system.Audit.entity.AuditLogs;
 import org.edu.infi_payment_system.Audit.enums.AuditAction;
 import org.edu.infi_payment_system.Audit.repository.AuditRepository;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -32,6 +33,7 @@ public class AuditService {
 
     private final AuditRepository auditRepository;
 
+    @Async
     @Transactional(propagation = Propagation.REQUIRES_NEW)
     public void saveAudit(UUID paymentId,
                           AuditAction action,

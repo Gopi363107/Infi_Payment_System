@@ -14,7 +14,9 @@ import org.edu.infi_payment_system.Payment.dto.PaymentRequestDto;
 import org.edu.infi_payment_system.Payment.dto.PaymentResponseDto;
 import org.edu.infi_payment_system.Payment.entity.Payments;
 import org.edu.infi_payment_system.Payment.enums.PaymentStatus;
+import org.edu.infi_payment_system.Payment.event.PaymentProcessingEvent;
 import org.edu.infi_payment_system.Payment.exception.custom.*;
+import org.edu.infi_payment_system.Payment.kafka.PaymentProducer;
 import org.edu.infi_payment_system.Payment.mapper.PaymentMapper;
 import org.edu.infi_payment_system.Payment.mapper.TransactionRequestMapper;
 import org.edu.infi_payment_system.Payment.repository.PaymentRepository;
@@ -40,6 +42,7 @@ public class PaymentServiceImpl implements PaymentService{
     private final FraudService fraudService;
     private final AuditService auditService;
     private final EventPublisher eventPublisher;
+    private final PaymentProducer paymentProducer;
 
 
     @Override
@@ -127,10 +130,23 @@ public class PaymentServiceImpl implements PaymentService{
 
             log.info("Money transaction is processing!");
 
-            transactionService.processTransaction(transactionRequest);
+            PaymentProcessingEvent event = PaymentProcessingEvent
+                    .builder()
+                    .paymentId(
+                            transactionRequest.getPaymentId()
+                    )
+                    .senderId(
+                            transactionRequest.getSenderId()
+                    )
+                    .receiverId(
+                            transactionRequest.getReceiverId()
+                    )
+                    .amount(
+                            transactionRequest.getAmount()
+                    )
+                    .build();
 
-            payment.setStatus(PaymentStatus.SUCCESS);
-            payment.setCompletedAt(LocalDateTime.now());
+            paymentProducer.publish(event);
 
             auditService.saveAudit(
                     payment.getPaymentId(),

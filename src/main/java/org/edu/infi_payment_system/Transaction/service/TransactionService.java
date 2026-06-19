@@ -11,7 +11,7 @@ import java.util.UUID;
 
 public interface TransactionService {
 
-    void processTransaction(TransactionRequestDto transactionRequest);
+    TransactionResponseDto processTransaction(TransactionRequestDto transactionRequest);
     TransactionResponseDto getByPaymentId(UUID paymentId);
     TransactionResponseDto getByTransactionId(UUID transactionId);
     List<TransactionResponseDto> getByTransactionStatus(TransactionStatus status);

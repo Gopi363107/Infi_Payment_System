@@ -45,7 +45,10 @@ public class Users implements UserDetails {
     @Column(name = "is_verified", nullable = false)
     private Boolean verified = false;
 
-    @OneToMany(cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "user",
+            cascade = CascadeType.ALL,
+            orphanRemoval = true
+    )
     private List<Accounts> accounts;
 
     @Column(name = "mobile_number", unique = true, nullable = false, length = 15)

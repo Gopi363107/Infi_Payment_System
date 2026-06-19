@@ -10,6 +10,7 @@ import org.edu.infi_payment_system.Audit.service.AuditService;
 import org.edu.infi_payment_system.Cache.service.AccountCacheService;
 import org.edu.infi_payment_system.Cache.service.TransactionCacheService;
 import org.edu.infi_payment_system.Ledger.service.LedgerService;
+import org.edu.infi_payment_system.Payment.exception.custom.AccountNotFoundException;
 import org.edu.infi_payment_system.Transaction.dto.TransactionRequestDto;
 import org.edu.infi_payment_system.Transaction.dto.TransactionResponseDto;
 import org.edu.infi_payment_system.Transaction.entity.Transactions;
@@ -39,7 +40,7 @@ public class TransactionServiceImpl implements TransactionService{
 
     @Override
     @Transactional
-    public void processTransaction(TransactionRequestDto transactionRequest) {
+    public TransactionResponseDto processTransaction(TransactionRequestDto transactionRequest) {
 
 
         auditService.saveAudit(
@@ -65,11 +66,15 @@ public class TransactionServiceImpl implements TransactionService{
         // 3. Lock both sender , receiver accounts to prevent duplicate payment transaction
         Accounts firstAccount = accountRepository
                 .findByAccountIdForUpdate(firstLockId)
-                        .orElseThrow();
+                        .orElseThrow(()-> new AccountNotFoundException(
+                                "Account not found :" + firstLockId
+                        ));
 
         Accounts secondAccount = accountRepository
                 .findByAccountIdForUpdate(secondLockId)
-                        .orElseThrow();
+                        .orElseThrow(()-> new AccountNotFoundException(
+                                "Account not found :" + secondLockId
+                        ));
 
         auditService.saveAudit(
                 transactionRequest.getPaymentId(),
@@ -174,7 +179,7 @@ public class TransactionServiceImpl implements TransactionService{
         );
         log.info("Transaction success!");
         // 10. send the response to sender about the transaction
-        transactionMapper.toResponseDto(savedTransaction);
+        return transactionMapper.toResponseDto(savedTransaction);
     }
 
     public Accounts getAccount(UUID id) {
