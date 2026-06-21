@@ -10,6 +10,9 @@ import org.edu.infi_payment_system.Audit.service.AuditService;
 import org.edu.infi_payment_system.Cache.service.AccountCacheService;
 import org.edu.infi_payment_system.Cache.service.TransactionCacheService;
 import org.edu.infi_payment_system.Ledger.service.LedgerService;
+import org.edu.infi_payment_system.Notification.enums.NotificationType;
+import org.edu.infi_payment_system.Notification.event.NotificationEvent;
+import org.edu.infi_payment_system.Notification.kafka.NotificationProducer;
 import org.edu.infi_payment_system.Payment.exception.custom.AccountNotFoundException;
 import org.edu.infi_payment_system.Transaction.dto.TransactionRequestDto;
 import org.edu.infi_payment_system.Transaction.dto.TransactionResponseDto;
@@ -37,6 +40,7 @@ public class TransactionServiceImpl implements TransactionService{
     private final AuditService auditService;
     private final AccountCacheService accountCacheService;
     private final TransactionCacheService transactionCacheService;
+    private final NotificationProducer notificationProducer;
 
     @Override
     @Transactional
@@ -178,6 +182,23 @@ public class TransactionServiceImpl implements TransactionService{
                 transactionRequest.getReceiverId()
         );
         log.info("Transaction success!");
+
+        notificationProducer.publish(
+
+                NotificationEvent.builder()
+                        .paymentId(transactionRequest.getPaymentId())
+                        .userId(sender.getAccountId())
+                        .message(
+                                "Payment of ₹" +
+                                        transactionRequest.getAmount() +
+                                        " completed successfully"
+                        )
+                        .notificationType(
+                                NotificationType.EMAIL
+                        )
+                        .build()
+        );
+
         // 10. send the response to sender about the transaction
         return transactionMapper.toResponseDto(savedTransaction);
     }

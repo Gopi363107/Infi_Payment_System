@@ -1,15 +1,15 @@
 package org.edu.infi_payment_system.Notification.mapper;
 
-import org.edu.infi_payment_system.Notification.dto.NotificationRequestDto;
 import org.edu.infi_payment_system.Notification.dto.NotificationResponseDto;
 import org.edu.infi_payment_system.Notification.entity.Notifications;
 import org.edu.infi_payment_system.Notification.enums.NotificationStatus;
+import org.edu.infi_payment_system.Notification.event.NotificationEvent;
 
 import java.time.LocalDateTime;
 
 public class NotificationMapper {
 
-    public static Notifications toEntity(NotificationRequestDto dto){
+    public static Notifications toEntity(NotificationEvent dto){
         if(dto == null)return  null;
 
         Notifications notification = new Notifications();

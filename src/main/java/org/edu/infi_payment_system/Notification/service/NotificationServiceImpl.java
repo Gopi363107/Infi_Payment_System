@@ -1,11 +1,11 @@
 package org.edu.infi_payment_system.Notification.service;
 
 import lombok.RequiredArgsConstructor;
-import org.edu.infi_payment_system.Notification.dto.NotificationRequestDto;
 import org.edu.infi_payment_system.Notification.dto.NotificationResponseDto;
 import org.edu.infi_payment_system.Notification.entity.Notifications;
 import org.edu.infi_payment_system.Notification.enums.NotificationStatus;
 import org.edu.infi_payment_system.Notification.enums.NotificationType;
+import org.edu.infi_payment_system.Notification.event.NotificationEvent;
 import org.edu.infi_payment_system.Notification.exception.custom.NotificationIdNotFoundException;
 import org.edu.infi_payment_system.Notification.exception.custom.NotificationSendException;
 import org.edu.infi_payment_system.Notification.exception.custom.NotificationStatusNotFoundException;
@@ -34,19 +34,15 @@ public class NotificationServiceImpl implements NotificationService {
             backoff = @Backoff(delay = 5000)
     )
     @Override
-    public NotificationResponseDto sendNotification(NotificationRequestDto dto) {
+    public NotificationResponseDto sendNotification(NotificationEvent event) {
 
-        Notifications notification = NotificationMapper.toEntity(dto);
+        Notifications notification = NotificationMapper.toEntity(event);
 
         if(serviceUnavailable()) {
             throw new NotificationSendException(
                     "Email service unavailable"
             );
         }
-
-        notification.setRetryCount(
-                notification.getRetryCount() + 1
-        );
 
         notification.setStatus(NotificationStatus.SENT);
         notification.setNextRetryAt(
@@ -58,43 +54,19 @@ public class NotificationServiceImpl implements NotificationService {
     }
 
     @Recover
-    public NotificationResponseDto recover(NotificationSendException ex, NotificationRequestDto dto
+    public NotificationResponseDto recover(NotificationSendException ex, NotificationEvent event
     ){
 
-        Notifications notification = NotificationMapper.toEntity(dto);
+        Notifications notification = NotificationMapper.toEntity(event);
 
         notification.setStatus(
                 NotificationStatus.FAILED
         );
+        notification.setRetryCount(0);
         notification.setNextRetryAt(
                 LocalDateTime.now().plusMinutes(5)
         );
 
-        Notifications saved = notificationRepository.save(notification);
-
-        return NotificationMapper.toResponseDto(saved);
-    }
-
-    @Override
-    public NotificationResponseDto retryNotification(UUID notificationId) {
-
-        Notifications notification = notificationRepository
-                .findById(notificationId).orElseThrow(
-                        ()-> new NotificationIdNotFoundException(
-                                "Notification id is not found!" + notificationId
-                        )
-                );
-
-        if(notification.getStatus() != NotificationStatus.FAILED){
-            throw new NotificationSendException(
-                    "Only FAILED notifications can be retried"
-            );
-        }
-
-        notification.setStatus(NotificationStatus.SENT);
-        notification.setRetryCount(
-                notification.getRetryCount() + 1
-        );
         Notifications saved = notificationRepository.save(notification);
 
         return NotificationMapper.toResponseDto(saved);

@@ -4,18 +4,18 @@ import org.edu.infi_payment_system.Notification.dto.NotificationRequestDto;
 import org.edu.infi_payment_system.Notification.dto.NotificationResponseDto;
 import org.edu.infi_payment_system.Notification.enums.NotificationStatus;
 import org.edu.infi_payment_system.Notification.enums.NotificationType;
+import org.edu.infi_payment_system.Notification.event.NotificationEvent;
 
 import java.util.List;
 import java.util.UUID;
 
 public interface NotificationService {
 
-    NotificationResponseDto sendNotification(NotificationRequestDto dto);
+    NotificationResponseDto sendNotification(NotificationEvent event);
     List<NotificationResponseDto> getByUserId(UUID userId);
     List<NotificationResponseDto> getAllNotification();
     List<NotificationResponseDto> getNotificationByStatus(NotificationStatus status);
     List<NotificationResponseDto> getNotificationByType(NotificationType type);
     NotificationResponseDto markAsRead(UUID notificationId);
     NotificationResponseDto getById(UUID notificationId);
-    NotificationResponseDto retryNotification(UUID notificationId);
 }

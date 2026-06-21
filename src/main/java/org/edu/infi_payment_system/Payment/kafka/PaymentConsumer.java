@@ -9,11 +9,9 @@ import org.edu.infi_payment_system.Payment.enums.PaymentStatus;
 import org.edu.infi_payment_system.Payment.event.PaymentProcessingEvent;
 import org.edu.infi_payment_system.Payment.repository.PaymentRepository;
 import org.edu.infi_payment_system.Transaction.dto.TransactionRequestDto;
-import org.edu.infi_payment_system.Transaction.mapper.TransactionMapper;
 import org.edu.infi_payment_system.Transaction.service.TransactionService;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Service;
-
 import java.time.LocalDateTime;
 
 @Slf4j
@@ -23,7 +21,6 @@ public class PaymentConsumer {
 
     private final PaymentRepository paymentRepository;
     private final TransactionService transactionService;
-    private final TransactionMapper transactionMapper;
     private final AuditService auditService;
 
     @KafkaListener(
@@ -35,9 +32,22 @@ public class PaymentConsumer {
                 .findByPaymentId(
                         event.getPaymentId()
                 )
-                .orElseThrow();
+                .orElseThrow(() ->
+                        new RuntimeException(
+                                "payment not found :"+ event.getPaymentId()
+                        )
+                );
+
+        if(payment.getStatus() == PaymentStatus.SUCCESS){
+            return;
+        }
 
         try{
+            log.info(
+                    "Processing payment {} for amount {}",
+                    event.getPaymentId(),
+                    event.getAmount()
+            );
 
             TransactionRequestDto request = TransactionRequestDto.builder()
                     .paymentId(
@@ -54,6 +64,8 @@ public class PaymentConsumer {
                     )
                     .build();
 
+            transactionService.processTransaction(request);
+
             payment.setStatus(
                     PaymentStatus.SUCCESS
             );
@@ -64,6 +76,11 @@ public class PaymentConsumer {
 
             paymentRepository.save(payment);
 
+            log.info(
+                    "Payment {} completed successfully",
+                    payment.getPaymentId()
+            );
+
             auditService.saveAudit(
                     payment.getPaymentId(),
                     AuditAction.PAYMENT_SUCCESS,
@@ -72,6 +89,12 @@ public class PaymentConsumer {
             );
         } catch (Exception e) {
 
+            log.error(
+                    "Payment processing failed for paymentId {} ",
+                    event.getPaymentId(),
+                    e
+            );
+
             payment.setStatus(
                     PaymentStatus.FAILED
             );
@@ -79,6 +102,8 @@ public class PaymentConsumer {
             payment.setCompletedAt(
                     LocalDateTime.now()
             );
+
+            paymentRepository.save(payment);
 
             auditService.saveAudit(
                     payment.getPaymentId(),

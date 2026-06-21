@@ -8,8 +8,6 @@ import org.edu.infi_payment_system.Audit.enums.AuditAction;
 import org.edu.infi_payment_system.Audit.service.AuditService;
 import org.edu.infi_payment_system.FraudCheck.dto.FraudCheckResult;
 import org.edu.infi_payment_system.FraudCheck.service.FraudService;
-import org.edu.infi_payment_system.Notification.event.PaymentCompletedEvent;
-import org.edu.infi_payment_system.Notification.event.Publisher.EventPublisher;
 import org.edu.infi_payment_system.Payment.dto.PaymentRequestDto;
 import org.edu.infi_payment_system.Payment.dto.PaymentResponseDto;
 import org.edu.infi_payment_system.Payment.entity.Payments;
@@ -21,11 +19,9 @@ import org.edu.infi_payment_system.Payment.mapper.PaymentMapper;
 import org.edu.infi_payment_system.Payment.mapper.TransactionRequestMapper;
 import org.edu.infi_payment_system.Payment.repository.PaymentRepository;
 import org.edu.infi_payment_system.Transaction.dto.TransactionRequestDto;
-import org.edu.infi_payment_system.Transaction.service.TransactionService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 
@@ -36,12 +32,10 @@ public class PaymentServiceImpl implements PaymentService{
 
     private final PaymentRepository paymentRepository;
     private final AccountRepository accountRepository;
-    private final TransactionService transactionService;
     private final PaymentMapper paymentMapper;
     private final TransactionRequestMapper transactionRequestMapper;
     private final FraudService fraudService;
     private final AuditService auditService;
-    private final EventPublisher eventPublisher;
     private final PaymentProducer paymentProducer;
 
 
@@ -120,7 +114,7 @@ public class PaymentServiceImpl implements PaymentService{
                 paymentRequest);
 
 
-        try{
+
             auditService.saveAudit(
                     payment.getPaymentId(),
                     AuditAction.PAYMENT_PENDING,
@@ -145,60 +139,7 @@ public class PaymentServiceImpl implements PaymentService{
                             transactionRequest.getAmount()
                     )
                     .build();
-
             paymentProducer.publish(event);
-
-            auditService.saveAudit(
-                    payment.getPaymentId(),
-                    AuditAction.PAYMENT_SUCCESS,
-                    paymentRequest.getSenderAccountId(),
-                    paymentRequest.getReceiverAccountId()
-            );
-
-            paymentRepository.save(payment);
-
-            log.info("Payment success!");
-        }
-        catch(Exception e){
-
-            log.error("Payment Failed!");
-
-            // 9. Mark Payment FAILED
-            payment.setStatus(PaymentStatus.FAILED);
-            payment.setCompletedAt(LocalDateTime.now());
-
-            auditService.saveAudit(
-                    payment.getPaymentId(),
-                    AuditAction.PAYMENT_FAILED,
-                    paymentRequest.getSenderAccountId(),
-                    paymentRequest.getReceiverAccountId()
-            );
-            // 10. save failed transaction
-            paymentRepository.save(payment);
-
-            throw e;
-        }
-        auditService.saveAudit(
-                payment.getPaymentId(),
-                AuditAction.PAYMENT_COMPLETED,
-                paymentRequest.getSenderAccountId(),
-                paymentRequest.getReceiverAccountId()
-        );
-        log.info("Payment process is completed!");
-
-        PaymentCompletedEvent event = PaymentCompletedEvent.builder()
-                .paymentId(payment.getPaymentId())
-                .senderId(
-                        payment.getSenderAccountId()
-                )
-                .receiverId(
-                        payment.getReceiverAccountId()
-                )
-                .amount(payment.getAmount())
-                .status(PaymentStatus.SUCCESS)
-                .build();
-
-        eventPublisher.publishPaymentCompletedEvent(event);
 
         return paymentMapper.toResponseDto(payment);
     }
