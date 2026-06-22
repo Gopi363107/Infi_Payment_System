@@ -11,6 +11,7 @@ import org.edu.infi_payment_system.Cache.service.AccountCacheService;
 import org.edu.infi_payment_system.Cache.service.TransactionCacheService;
 import org.edu.infi_payment_system.Ledger.service.LedgerService;
 import org.edu.infi_payment_system.Notification.enums.NotificationType;
+import org.edu.infi_payment_system.Notification.enums.ReferenceType;
 import org.edu.infi_payment_system.Notification.event.NotificationEvent;
 import org.edu.infi_payment_system.Notification.kafka.NotificationProducer;
 import org.edu.infi_payment_system.Payment.exception.custom.AccountNotFoundException;
@@ -44,7 +45,7 @@ public class TransactionServiceImpl implements TransactionService{
 
     @Override
     @Transactional
-    public TransactionResponseDto processTransaction(TransactionRequestDto transactionRequest) {
+    public void processTransaction(TransactionRequestDto transactionRequest) {
 
 
         auditService.saveAudit(
@@ -187,20 +188,18 @@ public class TransactionServiceImpl implements TransactionService{
 
                 NotificationEvent.builder()
                         .paymentId(transactionRequest.getPaymentId())
-                        .userId(sender.getAccountId())
+                        .userId(sender.getUser().getId())
+                        .title("Payment Successful")
                         .message(
                                 "Payment of ₹" +
                                         transactionRequest.getAmount() +
                                         " completed successfully"
                         )
-                        .notificationType(
-                                NotificationType.EMAIL
-                        )
+                        .notificationType(NotificationType.EMAIL)
+                        .referenceType(ReferenceType.PAYMENT_SUCCESS)
                         .build()
         );
 
-        // 10. send the response to sender about the transaction
-        return transactionMapper.toResponseDto(savedTransaction);
     }
 
     public Accounts getAccount(UUID id) {
@@ -222,8 +221,6 @@ public class TransactionServiceImpl implements TransactionService{
     }
 
     public TransactionStatus getTransactionStatus(UUID transactionId){
-
-        String id = transactionId.toString();
 
         TransactionStatus cached = transactionCacheService.get(transactionId);
 

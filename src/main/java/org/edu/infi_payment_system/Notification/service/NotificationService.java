@@ -1,6 +1,5 @@
 package org.edu.infi_payment_system.Notification.service;
 
-import org.edu.infi_payment_system.Notification.dto.NotificationRequestDto;
 import org.edu.infi_payment_system.Notification.dto.NotificationResponseDto;
 import org.edu.infi_payment_system.Notification.enums.NotificationStatus;
 import org.edu.infi_payment_system.Notification.enums.NotificationType;
@@ -11,7 +10,7 @@ import java.util.UUID;
 
 public interface NotificationService {
 
-    NotificationResponseDto sendNotification(NotificationEvent event);
+    void sendNotification(NotificationEvent event);
     List<NotificationResponseDto> getByUserId(UUID userId);
     List<NotificationResponseDto> getAllNotification();
     List<NotificationResponseDto> getNotificationByStatus(NotificationStatus status);
@@ -19,3 +18,38 @@ public interface NotificationService {
     NotificationResponseDto markAsRead(UUID notificationId);
     NotificationResponseDto getById(UUID notificationId);
 }
+
+/*
+            User
+             |
+             v
+            Payment Service
+             |
+             | Publish NotificationEvent
+             v
+            Kafka Topic
+             |
+             v
+            Notification Consumer
+             |
+             v
+            NotificationService
+             |
+             +---- Success ----> SENT
+             |
+             +---- Failure ----> Spring Retry
+                                      |
+                                      v
+                                  Recover
+                                      |
+                                      v
+                                   FAILED
+                                      |
+                                      v
+                                Retry Service
+                                      |
+                          +-----------+----------+
+                          |                      |
+                          v                      v
+                        SENT                 EXPIRED
+ */

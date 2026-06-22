@@ -17,3 +17,100 @@ public class InfiPaymentSystemApplication {
     }
     // http://localhost:8080/swagger-ui.html
 }
+/*
+
+                                                ┌──────────┐
+                                                │   User   │
+                                                └────┬─────┘
+                                                     │
+                                            ┌────────▼────────┐
+                                            │      Auth       │
+                                            └────────┬────────┘
+                                                     │
+                                                     ▼
+                             ┌─────────────────────────────────────────┐
+                             │              Payment Flow               │
+                             └─────────────────────────────────────────┘
+                             Payment
+                                │
+                                ▼
+                             FraudCheck
+                                │
+                                ▼
+                             Kafka
+                                │
+                                ▼
+                             Transaction
+                                │
+                             ┌──┼───────────────┬────────────┐
+                             ▼  ▼               ▼            ▼
+                            Account        Ledger       Audit
+                             │                             │
+                             ▼                             ▼
+                            Cache                     Notification
+
+                             ┌─────────────────────────────────────────┐
+                             │              Refund Flow                │
+                             └─────────────────────────────────────────┘
+
+                             Refund
+                                │
+                                ▼
+                             Transaction
+                                ▼
+                             Ledger
+                                ▼
+                             Audit
+                                ▼
+                             Notification
+
+                             ┌─────────────────────────────────────────┐
+                             │           Administration Flow           │
+                             └─────────────────────────────────────────┘
+
+                             Admin
+                               │
+                               ├── Users
+                               ├── Payments
+                               ├── Transactions
+                               ├── Audits
+                               └── Refunds
+
+                             ┌─────────────────────────────────────────┐
+                             │            Security Layer               │
+                             └─────────────────────────────────────────┘
+
+                             RateLimiting
+                                   │
+                                   ▼
+                             All APIs
+
+Core Fintech Engine
+
+✅ account
+✅ payment
+✅ transaction
+✅ ledger
+✅ audit
+✅ fraudCheck
+✅ notification
+✅ cache
+
+Security Layer
+
+✅ auth
+✅ rateLimiting
+
+Management Layer
+
+✅ admin
+
+Post-Payment Operations
+
+✅ refund
+
+Identity Layer
+
+✅ user
+
+ */

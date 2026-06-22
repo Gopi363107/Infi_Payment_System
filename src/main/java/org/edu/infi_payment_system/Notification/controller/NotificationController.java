@@ -2,10 +2,11 @@ package org.edu.infi_payment_system.Notification.controller;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.edu.infi_payment_system.Notification.dto.NotificationRequestDto;
 import org.edu.infi_payment_system.Notification.dto.NotificationResponseDto;
 import org.edu.infi_payment_system.Notification.enums.NotificationStatus;
 import org.edu.infi_payment_system.Notification.enums.NotificationType;
+import org.edu.infi_payment_system.Notification.event.NotificationEvent;
+import org.edu.infi_payment_system.Notification.service.NotificationRetryService;
 import org.edu.infi_payment_system.Notification.service.NotificationService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -19,16 +20,23 @@ import java.util.UUID;
 public class NotificationController {
 
     private final NotificationService notificationService;
+    private  final NotificationRetryService notificationRetryService;
 
     @PostMapping
-    public ResponseEntity<NotificationResponseDto> sendNotification(
-            @Valid @RequestBody NotificationRequestDto dto){
-        return ResponseEntity.ok(notificationService.sendNotification(dto));
+    public ResponseEntity<String> sendNotification(
+            @Valid @RequestBody NotificationEvent event){
+
+        notificationService.sendNotification(event);
+
+        return ResponseEntity.ok("Notification sent");
     }
 
     @PostMapping("/{notificationId}/retry")
-    public ResponseEntity<NotificationResponseDto> retryNotification(@PathVariable UUID notificationId){
-        return ResponseEntity.ok(notificationService.retryNotification(notificationId));
+    public ResponseEntity<String> retryNotification(@PathVariable UUID notificationId){
+
+        notificationRetryService.retryNotification(notificationId);
+
+        return ResponseEntity.ok("Retry triggered");
     }
 
     @GetMapping("/user/{userId}")

@@ -3,9 +3,7 @@ package org.edu.infi_payment_system.Notification.event;
 import lombok.*;
 import org.edu.infi_payment_system.Notification.enums.NotificationType;
 import org.edu.infi_payment_system.Notification.enums.ReferenceType;
-import org.edu.infi_payment_system.Payment.enums.PaymentStatus;
 
-import java.math.BigDecimal;
 import java.util.UUID;
 
 @Getter
@@ -17,6 +15,7 @@ public class NotificationEvent {
 
     private UUID paymentId;
     private UUID userId;
+    private String title;
     private String message;
     private NotificationType notificationType;
     private ReferenceType referenceType;

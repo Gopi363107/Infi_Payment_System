@@ -10,7 +10,7 @@ import java.util.UUID;
 
 public interface PaymentService {
 
-    PaymentResponseDto createPayment(PaymentRequestDto dto);
+    void createPayment(PaymentRequestDto dto);
     PaymentResponseDto getPaymentById(UUID id);
     List<PaymentResponseDto> getPaymentByAccount(UUID accountId);
     List<PaymentResponseDto> getAllPayments();
@@ -24,4 +24,48 @@ public interface PaymentService {
 4. Call transactionService.processTransaction(...)
 5. Mark payment SUCCESS or FAILED
 6. Return response
+
+PAYMENT FLOW DIAGRAM
+
+Payment API
+    |
+    v
+PaymentService
+    |
+    v
+PaymentProducer
+    |
+    v
+Kafka (payment-processing-topic)
+    |
+    v
+PaymentConsumer
+    |
+    v
+TransactionService
+    |
+    +--> Account Update
+    +--> Ledger Entry
+    +--> Audit Logs
+    +--> Transaction Record
+    +--> Cache Update
+    +--> NotificationProducer
+                  |
+                  v
+            Kafka (notification-topic)
+                  |
+                  v
+          NotificationConsumer
+                  |
+                  v
+          NotificationService
+                  |
+                  +--> SENT
+                  +--> FAILED
+                           |
+                           v
+                    Retry Scheduler
+                           |
+                           v
+                    SENT / EXPIRED
  */

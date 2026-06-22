@@ -1,13 +1,11 @@
 package org.edu.infi_payment_system.Notification.scheduler;
 
-import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.edu.infi_payment_system.Notification.entity.Notifications;
 import org.edu.infi_payment_system.Notification.enums.NotificationStatus;
 import org.edu.infi_payment_system.Notification.repository.NotificationRepository;
 import org.edu.infi_payment_system.Notification.service.NotificationRetryService;
-import org.edu.infi_payment_system.Notification.service.NotificationSenderService;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 

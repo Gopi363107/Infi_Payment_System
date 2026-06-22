@@ -34,7 +34,7 @@ public class NotificationServiceImpl implements NotificationService {
             backoff = @Backoff(delay = 5000)
     )
     @Override
-    public NotificationResponseDto sendNotification(NotificationEvent event) {
+    public void sendNotification(NotificationEvent  event) {
 
         Notifications notification = NotificationMapper.toEntity(event);
 
@@ -50,7 +50,6 @@ public class NotificationServiceImpl implements NotificationService {
         );
         Notifications saved = notificationRepository.save(notification);
 
-        return NotificationMapper.toResponseDto(saved);
     }
 
     @Recover
