@@ -5,8 +5,9 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.edu.infi_payment_system.Admin.enums.AdminRole;
+import org.edu.infi_payment_system.Admin.enums.AdminAction;
 
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Entity
@@ -14,22 +15,23 @@ import java.util.UUID;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class AdminDetails {
+public class AdminAuditLog {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
-    private UUID adminId;
+    private UUID auditId;
 
-    @Column(nullable = false , unique = true)
-    private String email;
-
-    @Column(nullable = false)
-    private String fullName;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "admin_id")
+    private AdminDetails admin;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private AdminRole adminRole;
+    private AdminAction adminAction;
 
-    @Column(nullable = false)
-    private boolean isActive;
+    private String targetId;
+
+    private String description;
+
+    private LocalDateTime timeStamp;
 }
