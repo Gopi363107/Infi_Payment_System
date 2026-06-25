@@ -18,5 +18,11 @@ public interface TransactionRepository extends JpaRepository<Transactions, UUID>
 
     List<Transactions> findBySenderIdOrReceiverId(UUID senderId , UUID receiverId);
 
-    List<Transactions> findBySenderId(UUID senderId);
+    List<Transactions> findBySenderId(
+            UUID senderId
+    );
+
+    List<Transactions> findByReceiverId(
+            UUID receiverId
+    );
 }

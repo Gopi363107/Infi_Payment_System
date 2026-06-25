@@ -18,5 +18,5 @@ public interface AdminUserService {
 
     void unFreezeUser(UUID userId);
 
-    List<UserTransactionResponse> getUserTransaction(UUID userId);
+    List<UserTransactionResponse> getUserTransaction(UUID senderId ,UUID receiverId);
 }

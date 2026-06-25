@@ -5,6 +5,7 @@ import org.edu.infi_payment_system.Admin.dto.UserDetailsResponse;
 import org.edu.infi_payment_system.Admin.dto.UserSearchResponse;
 import org.edu.infi_payment_system.Admin.dto.UserTransactionResponse;
 import org.edu.infi_payment_system.Admin.service.AdminUserService;
+import org.edu.infi_payment_system.User.enums.AccountStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -26,14 +27,21 @@ public class UserManagementController {
         );
     }
 
-    @GetMapping("/serach")
+    @GetMapping("/search")
     public ResponseEntity<List<UserSearchResponse>> searchUser(
             @RequestParam(required = false)String  name,
         @RequestParam(required = false) String email ,
         @RequestParam(required = false) String status){
 
+        AccountStatus accountStatus = null;
+
+        if(status != null){
+            accountStatus = AccountStatus.valueOf(
+                    status.toUpperCase());
+        }
+
         return ResponseEntity.ok(
-                adminUserService.searchUser(name, email, status)
+                adminUserService.searchUser(name, email, accountStatus)
         );
     }
 

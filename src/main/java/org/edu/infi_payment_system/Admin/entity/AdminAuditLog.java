@@ -6,6 +6,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.edu.infi_payment_system.Admin.enums.AdminAction;
+import org.hibernate.annotations.CreationTimestamp;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
@@ -29,9 +30,23 @@ public class AdminAuditLog {
     @Column(nullable = false)
     private AdminAction adminAction;
 
-    private String targetId;
+    @Column(nullable = false)
+    private String adminEmail;
+
+    @Column(nullable = false)
+    private String targetUserId;
+
+    private String targetType;
+
+    private String oldValue;
+
+    private String newValue;
 
     private String description;
 
-    private LocalDateTime timeStamp;
+    private boolean success;
+
+    @CreationTimestamp
+    @Column(nullable = false, updatable = false)
+    private LocalDateTime createdAt;
 }

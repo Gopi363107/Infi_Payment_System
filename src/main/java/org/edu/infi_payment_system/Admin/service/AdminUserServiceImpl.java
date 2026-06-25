@@ -55,8 +55,9 @@ public class AdminUserServiceImpl implements  AdminUserService{
     }
 
     @Override
-    public List<UserTransactionResponse> getUserTransaction(UUID userId) {
-        List<Transactions> transactions = transactionRepository.findBySenderId(userId);
+    public List<UserTransactionResponse> getUserTransaction(UUID senderId ,UUID receiverId) {
+        List<Transactions> transactions = transactionRepository
+                .findBySenderIdOrReceiverId(senderId,receiverId);
 
         return transactions.stream()
                 .map(this :: mapToTransactionResponse)
@@ -69,6 +70,12 @@ public class AdminUserServiceImpl implements  AdminUserService{
         Users user = userRepository.findById(userId)
                 .orElseThrow(() -> new UserNotFoundException("user not found"));
 
+        if(user.getAccountStatus() == AccountStatus.BLOCKED){
+            throw new IllegalStateException(
+                    "User already blocked"
+            );
+        }
+
         user.setAccountStatus(AccountStatus.BLOCKED);
 
         userRepository.save(user);
@@ -78,6 +85,12 @@ public class AdminUserServiceImpl implements  AdminUserService{
     public void unFreezeUser(UUID userId) {
         Users user = userRepository.findById(userId)
                 .orElseThrow(() -> new UserNotFoundException("user not found"));
+
+        if(user.getAccountStatus() == AccountStatus.ACTIVE){
+            throw new IllegalStateException(
+                    "user already active"
+            );
+        }
 
         user.setAccountStatus(AccountStatus.ACTIVE);
 
