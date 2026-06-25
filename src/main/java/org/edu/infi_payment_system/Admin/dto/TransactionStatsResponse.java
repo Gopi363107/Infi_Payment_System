@@ -16,5 +16,6 @@ public class TransactionStatsResponse {
     private long totalTransactions;
     private long successfulTransactions;
     private long failedTransactions;
+    private long pendingTransactions;
     private BigDecimal totalAmountTransferred;
 }

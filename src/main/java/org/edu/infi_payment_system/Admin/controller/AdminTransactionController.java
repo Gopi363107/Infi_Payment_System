@@ -5,6 +5,7 @@ import org.edu.infi_payment_system.Admin.dto.TransactionDetailsResponse;
 import org.edu.infi_payment_system.Admin.dto.TransactionSearchResponse;
 import org.edu.infi_payment_system.Admin.dto.TransactionStatsResponse;
 import org.edu.infi_payment_system.Admin.service.AdminTransactionService;
+import org.edu.infi_payment_system.Transaction.enums.TransactionStatus;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
@@ -31,8 +32,9 @@ public class AdminTransactionController {
     public ResponseEntity<List<TransactionSearchResponse>> searchTransactions(
             @RequestParam(required = false) UUID senderId,
             @RequestParam(required = false) UUID receiverId,
-            @RequestParam(required = false) String status){
-        return ResponseEntity.ok(adminTransactionService.searchTransactions(senderId,receiverId,status));
+            @RequestParam(required = false) TransactionStatus transactionStatus){
+        return ResponseEntity.ok(adminTransactionService.searchTransactions(
+                senderId,receiverId,transactionStatus));
     }
 
     @GetMapping

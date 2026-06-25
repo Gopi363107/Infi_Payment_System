@@ -3,6 +3,7 @@ package org.edu.infi_payment_system.Admin.service;
 import org.edu.infi_payment_system.Admin.dto.TransactionDetailsResponse;
 import org.edu.infi_payment_system.Admin.dto.TransactionSearchResponse;
 import org.edu.infi_payment_system.Admin.dto.TransactionStatsResponse;
+import org.edu.infi_payment_system.Transaction.enums.TransactionStatus;
 import org.springframework.data.domain.Page;
 
 import org.springframework.data.domain.Pageable;
@@ -14,7 +15,7 @@ public interface AdminTransactionService {
     TransactionDetailsResponse getTransaction(UUID transactionId);
     List<TransactionSearchResponse> searchTransactions(UUID senderId,
                                                        UUID receiverId,
-                                                       String status);
+                                                       TransactionStatus status);
 
     Page<TransactionSearchResponse> getAllTransactions(Pageable pageable);
 
