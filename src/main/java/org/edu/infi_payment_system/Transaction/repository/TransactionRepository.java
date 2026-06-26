@@ -4,6 +4,7 @@ import org.edu.infi_payment_system.Transaction.entity.Transactions;
 import org.edu.infi_payment_system.Transaction.enums.TransactionStatus;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 import java.math.BigDecimal;
 import java.util.List;

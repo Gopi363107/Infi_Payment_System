@@ -2,6 +2,7 @@ package org.edu.infi_payment_system.Admin.service;
 
 import org.edu.infi_payment_system.Admin.dto.UserDetailsResponse;
 import org.edu.infi_payment_system.Admin.dto.UserSearchResponse;
+import org.edu.infi_payment_system.Admin.dto.UserStatsResponse;
 import org.edu.infi_payment_system.Admin.dto.UserTransactionResponse;
 import org.edu.infi_payment_system.User.enums.AccountStatus;
 
@@ -19,4 +20,6 @@ public interface AdminUserService {
     void unFreezeUser(UUID userId);
 
     List<UserTransactionResponse> getUserTransaction(UUID senderId ,UUID receiverId);
+
+    UserStatsResponse getUserStats();
 }

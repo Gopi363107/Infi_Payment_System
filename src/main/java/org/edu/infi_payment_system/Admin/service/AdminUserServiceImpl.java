@@ -3,6 +3,7 @@ package org.edu.infi_payment_system.Admin.service;
 import lombok.RequiredArgsConstructor;
 import org.edu.infi_payment_system.Admin.dto.UserDetailsResponse;
 import org.edu.infi_payment_system.Admin.dto.UserSearchResponse;
+import org.edu.infi_payment_system.Admin.dto.UserStatsResponse;
 import org.edu.infi_payment_system.Admin.dto.UserTransactionResponse;
 import org.edu.infi_payment_system.Auth.exception.custom.UserNotFoundException;
 import org.edu.infi_payment_system.Transaction.entity.Transactions;
@@ -95,6 +96,22 @@ public class AdminUserServiceImpl implements  AdminUserService{
         user.setAccountStatus(AccountStatus.ACTIVE);
 
         userRepository.save(user);
+    }
+
+    @Override
+    public UserStatsResponse getUserStats() {
+
+        UserStatsResponse response = new UserStatsResponse();
+
+        response.setTotalUsers(userRepository.count());
+
+        response.setActiveUsers(
+                userRepository.countByAccountStatus(AccountStatus.ACTIVE));
+
+        response.setSuspendedUsers(
+                userRepository.countByAccountStatus(AccountStatus.SUSPENDED));
+
+        return response;
     }
 
     private UserDetailsResponse mapToUserDetailsResponse(
