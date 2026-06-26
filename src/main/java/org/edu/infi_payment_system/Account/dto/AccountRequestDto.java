@@ -7,12 +7,14 @@ import lombok.Getter;
 import lombok.Setter;
 import org.edu.infi_payment_system.Account.enums.AccountType;
 
+import java.util.UUID;
+
 @Getter
 @Setter
 public class AccountRequestDto {
 
     @NotNull(message = "userId is required")
-    private Long userId;
+    private UUID userId;
 
     @NotBlank(message = "bankName is required")
     private String bankName;

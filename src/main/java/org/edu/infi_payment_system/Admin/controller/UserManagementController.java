@@ -65,13 +65,14 @@ public class UserManagementController {
                 "User unfrozen successfully");
     }
 
-    @GetMapping("/{userId}/transactions")
+    @GetMapping("/{senderId}/transactions")
     public ResponseEntity<List<UserTransactionResponse>>
     getUserTransactions(
-            @PathVariable UUID userId) {
+            @PathVariable UUID senderId,
+            @PathVariable UUID  receiverId) {
 
         return ResponseEntity.ok(
-                adminUserService.getUserTransaction(userId)
+                adminUserService.getUserTransactions(senderId , receiverId)
         );
     }
 

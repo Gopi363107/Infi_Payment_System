@@ -56,7 +56,7 @@ public class AdminUserServiceImpl implements  AdminUserService{
     }
 
     @Override
-    public List<UserTransactionResponse> getUserTransaction(UUID senderId ,UUID receiverId) {
+    public List<UserTransactionResponse> getUserTransactions(UUID senderId ,UUID receiverId) {
         List<Transactions> transactions = transactionRepository
                 .findBySenderIdOrReceiverId(senderId,receiverId);
 

@@ -22,8 +22,8 @@ public class Ledgers {
 
     // Identity & Traceability
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    @GeneratedValue(strategy = GenerationType.UUID)
+    private UUID id;
 
     @Column(nullable = false)
     private UUID transactionId;

@@ -14,6 +14,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Service
@@ -52,7 +53,7 @@ public class UserServiceImpl implements UserService{
         return "dummy token - H389Y3BNDO3289NMNNDU3820BJD62J";
     }
     @Override
-    public UserResponseDto getUserById(Long id){
+    public UserResponseDto getUserById(UUID id){
 
         Users user = userRepository.findById(id).orElseThrow( () -> new UsernameNotFoundException("user not found with id "+ id));
 
@@ -68,7 +69,7 @@ public class UserServiceImpl implements UserService{
     }
 
     @Override
-    public void deleteUser(Long id){
+    public void deleteUser(UUID id){
         if(!userRepository.existsById(id)){
             throw new UsernameNotFoundException("User not found with id " + id);
         }

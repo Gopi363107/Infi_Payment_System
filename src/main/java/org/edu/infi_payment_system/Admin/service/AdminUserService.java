@@ -19,7 +19,7 @@ public interface AdminUserService {
 
     void unFreezeUser(UUID userId);
 
-    List<UserTransactionResponse> getUserTransaction(UUID senderId ,UUID receiverId);
+    List<UserTransactionResponse> getUserTransactions(UUID senderId ,UUID receiverId);
 
     UserStatsResponse getUserStats();
 }

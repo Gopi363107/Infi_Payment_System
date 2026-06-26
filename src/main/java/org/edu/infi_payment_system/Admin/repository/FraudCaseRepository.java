@@ -14,9 +14,9 @@ public interface FraudCaseRepository extends JpaRepository<FraudCase, UUID> {
 
     long count();
 
-    long countByStatus(FraudStatus status);
+    long countByFraudStatus(FraudStatus status);
 
-    List<FraudCase> findByStatus(FraudStatus status);
+    List<FraudCase> findByFraudStatus(FraudStatus status);
 
     Optional<FraudCase> findByFraudId(UUID fraudId);
 

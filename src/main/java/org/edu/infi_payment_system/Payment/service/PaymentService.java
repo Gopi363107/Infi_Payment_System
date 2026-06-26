@@ -10,7 +10,7 @@ import java.util.UUID;
 
 public interface PaymentService {
 
-    void createPayment(PaymentRequestDto dto);
+    PaymentResponseDto createPayment(PaymentRequestDto dto);
     PaymentResponseDto getPaymentById(UUID id);
     List<PaymentResponseDto> getPaymentByAccount(UUID accountId);
     List<PaymentResponseDto> getAllPayments();

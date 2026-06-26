@@ -13,7 +13,7 @@ import java.util.UUID;
 
 @Repository
 public interface AccountRepository extends JpaRepository<Accounts, UUID> {
-    boolean existsByUserId(Long userId);
+    boolean existsByUserId(UUID userId);
 
     Optional<Object> findByAccountId(@NotNull(message = "receiver id is required") UUID receiverAccountId);
 

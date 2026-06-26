@@ -9,12 +9,9 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class NotificationProducer {
 
-    private final KafkaTemplate<String , NotificationEvent> kafkaTemplate;
+    private final KafkaTemplate<String, NotificationEvent> kafkaTemplate;
 
-    public void publish(NotificationEvent event){
-        kafkaTemplate.send(
-                "notification-topic",
-                event
-        );
+    public void publish(NotificationEvent event) {
+        kafkaTemplate.send("notification-topic", event);
     }
 }

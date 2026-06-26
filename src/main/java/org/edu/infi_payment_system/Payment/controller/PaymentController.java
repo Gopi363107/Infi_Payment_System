@@ -20,10 +20,9 @@ public class PaymentController {
     private final PaymentService paymentService;
 
     @PostMapping("/transfer")
-    public ResponseEntity<PaymentResponseDto> createPayment(
+    public void createPayment(
             @Valid @RequestBody PaymentRequestDto dto){
         PaymentResponseDto response = paymentService.createPayment(dto);
-        return ResponseEntity.ok(response);
     }
 
     @GetMapping("/{id}")

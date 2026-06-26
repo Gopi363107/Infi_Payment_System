@@ -8,7 +8,6 @@ import org.edu.infi_payment_system.Account.exception.custom.AccountAlreadyExists
 import org.edu.infi_payment_system.Account.exception.custom.AccountNotFoundException;
 import org.edu.infi_payment_system.Account.mapper.AccountMapper;
 import org.edu.infi_payment_system.Account.repository.AccountRepository;
-import org.edu.infi_payment_system.Audit.enums.AuditAction;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 

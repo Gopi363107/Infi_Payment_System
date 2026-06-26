@@ -41,7 +41,7 @@ public class PaymentServiceImpl implements PaymentService{
 
     @Override
     @Transactional
-    public void createPayment(PaymentRequestDto paymentRequest){
+    public PaymentResponseDto createPayment(PaymentRequestDto paymentRequest){
 
         log.info("Payment started");
 
@@ -68,7 +68,7 @@ public class PaymentServiceImpl implements PaymentService{
 
         if(existing != null){
             log.error("Same Idempotency is detected");
-            return ;
+            return null;
         }
 
         log.info("Duplicate payment is checked!");
@@ -142,6 +142,7 @@ public class PaymentServiceImpl implements PaymentService{
 
             paymentProducer.publish(event);
 
+        return null;
     }
 
     @Override
